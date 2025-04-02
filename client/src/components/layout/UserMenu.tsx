@@ -29,6 +29,16 @@ export default function UserMenu() {
 
   const handleSignOut = async () => {
     try {
+      // Check if this is a test user
+      const testUserJson = localStorage.getItem("testUser");
+      if (testUserJson) {
+        // For test user, just remove from localStorage
+        localStorage.removeItem("testUser");
+        window.location.href = "/auth";
+        return;
+      }
+      
+      // Regular Firebase logout
       await logout();
       // Firebase auth state will be handled by the AuthContext
     } catch (error) {

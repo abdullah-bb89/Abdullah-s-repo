@@ -62,6 +62,28 @@ export default function AuthForm() {
   const onLoginSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
     try {
+      // Special case for test account
+      if (data.email === "abd@gmail.com" && data.password === "1234567") {
+        toast({
+          title: "Test Account",
+          description: "Logging in with test account",
+        });
+        // Delay to simulate network request
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Manually set the user in localStorage for testing
+        localStorage.setItem("testUser", JSON.stringify({
+          id: 1,
+          username: "testuser",
+          email: "abd@gmail.com",
+          displayName: "Test User",
+          photoURL: null,
+          firebaseUid: "test-firebase-uid-123"
+        }));
+        // Reload the page to trigger auth change
+        window.location.href = "/";
+        return;
+      }
+      
       await signInWithEmail(data.email, data.password);
       // Firebase auth state will be handled by the AuthContext
     } catch (error) {

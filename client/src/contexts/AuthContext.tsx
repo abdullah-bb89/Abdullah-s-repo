@@ -31,6 +31,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Check for test user in localStorage
+    const testUserJson = localStorage.getItem("testUser");
+    if (testUserJson) {
+      try {
+        const testUser = JSON.parse(testUserJson);
+        setUser(testUser);
+        setLoading(false);
+        return () => {}; // No cleanup needed for test user
+      } catch (e) {
+        console.error("Error parsing test user:", e);
+        localStorage.removeItem("testUser");
+      }
+    }
+
+    // Regular Firebase auth
     const unsubscribe = subscribeToAuthChanges(async (firebaseUser) => {
       try {
         if (firebaseUser) {
