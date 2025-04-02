@@ -1,0 +1,25 @@
+Prompt 1: User Authentication Vibe
+Imagine a chill login/signup screen—nothing too heavy. Picture a user typing their email and password, or maybe just tapping a “Sign in with Google” button. The goal? Get them in quick and smooth, then slide them into the app like they’re stepping into a cozy space. Think about a backend that’s just vibing with a simple user check—maybe a database humming in the background, holding their info. When they’re authenticated, nudge them over to the main app with a slick redirect. No stress, just flow.
+
+Mood: Easy, welcoming, like a warm handshake.
+Tools to Feel: Firebase for that plug-and-play auth magic, or roll your own with a lightweight server if you’re feeling crafty.
+Prompt 2: Knowledge Generation Vibe
+Now the user’s in—time to spark some curiosity. Picture them tossing a question into a text box, something like “What’s the deal with black holes?” Hit a “Generate” button, and the app reaches out to an LLM, like it’s calling up a wise friend. The LLM (via an API key you’ve got stashed somewhere safe) sends back a crisp, juicy explanation—short enough to digest, deep enough to vibe with. Display it on the screen like a little knowledge nugget, glowing and ready.
+
+Mood: Curious, exploratory, like flipping through a cosmic book.
+Tools to Feel: OpenAI’s API or whatever LLM you’re grooving with—just send that query and catch the response.
+Prompt 3: Flashcard Creation Vibe
+Take that knowledge nugget and remix it into flashcards—think of it like chopping a beat into samples. Maybe the app vibes on its own, splitting the text into bite-sized Q&A pairs, or it asks the LLM again, “Yo, turn this into some flashcards.” Picture a stack of cards popping up—front side asking something cool, back side dropping the answer. Let the user flip through them, feeling the rhythm of learning.
+
+Mood: Playful, snappy, like a DJ spinning facts.
+Tools to Feel: Lean on the LLM to do the heavy lifting, or freestyle some logic to slice the text yourself.
+Prompt 4: Saving the Vibe
+The user’s digging these flashcards—let them keep the groove going. Imagine a “Save” button that tucks those cards into a database, tied to their account. Next time they log in, the app’s like, “Hey, remember these?” and pulls them back up. It’s all about that personal vibe, keeping their learning journey alive.
+
+Mood: Smooth, sentimental, like saving a playlist.
+Tools to Feel: Firebase Firestore or MongoDB—something chill to stash the data.
+Prompt 5: UI/UX Flow
+See the app in your mind: a clean login screen that melts away, a main space with an input field begging for questions, and a results zone where knowledge and flashcards dance together. Keep it minimal but soulful—soft colors, smooth transitions, buttons that feel good to tap. Let the user glide from question to flashcards like they’re riding a wave.
+
+Mood: Fluid, dreamy, like a late-night creative session.
+Tools to Feel: React or React Native—whatever’s got your energy flowing.
