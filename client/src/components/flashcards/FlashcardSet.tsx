@@ -11,6 +11,12 @@ interface Flashcard {
   question: string;
   answer: string;
   setId: number;
+  backgroundColor?: string;
+  textColor?: string;
+  font?: string;
+  difficulty?: string;
+  tags?: string[];
+  imageUrl?: string;
 }
 
 interface FlashcardSetProps {
@@ -20,7 +26,18 @@ interface FlashcardSetProps {
 export default function FlashcardSet({ setId }: FlashcardSetProps) {
   const { toast } = useToast();
 
-  const { data, isLoading, error } = useQuery({
+  interface FlashcardSetData {
+    id: number;
+    title: string;
+    userId: number;
+    flashcards: Flashcard[];
+    description?: string;
+    category?: string;
+    isPublic?: boolean;
+    defaultCardStyle?: string;
+  }
+
+  const { data, isLoading, error } = useQuery<FlashcardSetData>({
     queryKey: [`/api/flashcard-sets/${setId}`],
     throwOnError: false
   });
@@ -107,6 +124,12 @@ export default function FlashcardSet({ setId }: FlashcardSetProps) {
             answer={card.answer}
             index={index}
             total={flashcards.length}
+            backgroundColor={card.backgroundColor || undefined}
+            textColor={card.textColor || undefined}
+            font={card.font || undefined}
+            difficulty={card.difficulty || undefined}
+            tags={card.tags || []}
+            imageUrl={card.imageUrl || undefined}
           />
         ))}
       </div>

@@ -157,7 +157,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Flashcard set routes
   app.post("/api/flashcard-sets", async (req: Request, res: Response) => {
     try {
-      const { userId, title, originalQuestion, originalAnswer, flashcards } = req.body;
+      const { userId, title, originalQuestion, originalAnswer, flashcards, description, category, isPublic, defaultCardStyle } = req.body;
       
       if (!userId || !title || !originalQuestion || !originalAnswer || !flashcards || !Array.isArray(flashcards)) {
         return res.status(400).json({ message: "Missing required fields" });
@@ -169,23 +169,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "User not found" });
       }
       
-      // Create flashcard set
+      // Create flashcard set with enhanced properties
       const flashcardSetData: InsertFlashcardSet = {
         userId,
         title,
         originalQuestion,
         originalAnswer,
-        cardCount: flashcards.length
+        cardCount: flashcards.length,
+        description: description || null,
+        category: category || null,
+        isPublic: isPublic || false,
+        defaultCardStyle: defaultCardStyle || null
       };
       
       const flashcardSet = await storage.createFlashcardSet(flashcardSetData);
       
-      // Create flashcards
-      const flashcardPromises = flashcards.map((card: {question: string, answer: string}) => {
+      // Create flashcards with enhanced properties
+      const flashcardPromises = flashcards.map((card: {
+        question: string, 
+        answer: string,
+        backgroundColor?: string,
+        textColor?: string,
+        font?: string,
+        difficulty?: string,
+        tags?: string[],
+        imageUrl?: string
+      }) => {
         const flashcardData: InsertFlashcard = {
           question: card.question,
           answer: card.answer,
-          setId: flashcardSet.id
+          setId: flashcardSet.id,
+          backgroundColor: card.backgroundColor || null,
+          textColor: card.textColor || null,
+          font: card.font || null,
+          difficulty: card.difficulty || null,
+          tags: card.tags || [],
+          imageUrl: card.imageUrl || null
         };
         return storage.createFlashcard(flashcardData);
       });

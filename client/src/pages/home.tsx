@@ -70,12 +70,19 @@ export default function HomePage() {
         ? currentQuestion.substring(0, 50) + "..." 
         : currentQuestion;
 
+      // Use setInfo from Gemini if available, otherwise use defaults
+      const setInfo = flashcards.setInfo || {};
+      
       await apiRequest("POST", "/api/flashcard-sets", {
         userId: user.id,
-        title,
+        title: setInfo.title || title,
         originalQuestion: currentQuestion,
         originalAnswer: knowledgeResult,
         flashcards: flashcards.flashcards,
+        description: setInfo.description || null,
+        category: setInfo.category || null,
+        isPublic: false, // Default to private
+        defaultCardStyle: setInfo.defaultCardStyle || null
       });
       
       // Invalidate the query to refresh the saved sets
@@ -154,6 +161,12 @@ export default function HomePage() {
                       answer={card.answer}
                       index={index}
                       total={flashcards.flashcards.length}
+                      backgroundColor={card.backgroundColor}
+                      textColor={card.textColor}
+                      font={card.font}
+                      difficulty={card.difficulty}
+                      tags={card.tags}
+                      imageUrl={card.imageUrl}
                     />
                   ))}
                 </div>

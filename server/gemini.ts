@@ -59,29 +59,75 @@ export async function generateKnowledgeWithGemini(question: string): Promise<str
   }
 }
 
-// Function to generate flashcards
-export async function generateFlashcardsWithGemini(text: string): Promise<{ flashcards: Array<{ question: string, answer: string }> }> {
+// Function to generate flashcards with enhanced customization
+export async function generateFlashcardsWithGemini(text: string): Promise<{ 
+  flashcards: Array<{ 
+    question: string, 
+    answer: string, 
+    backgroundColor?: string,
+    textColor?: string,
+    font?: string,
+    difficulty?: string,
+    tags?: string[]
+  }>,
+  setInfo?: {
+    title?: string,
+    description?: string,
+    category?: string,
+    defaultCardStyle?: string
+  }
+}> {
   try {
-    // For text-only input, use the gemini-1.5-pro model (updated from gemini-pro)
+    // For text-only input, use the gemini-1.5-pro model
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
     
-    const prompt = `You are a helpful, educational assistant. Your task is to generate flashcards from the provided text. Create between 3-8 flashcards with clear questions and concise answers. Return your response as a JSON object with a 'flashcards' array containing objects with 'question' and 'answer' fields.
+    const prompt = `You are a helpful, educational assistant. Your task is to generate enhanced flashcards from the provided text. Create between 3-8 flashcards with clear questions and concise answers.
+
+    Return your response as a JSON object with:
+    1. A 'flashcards' array containing flashcard objects with the following fields:
+       - 'question': The main question (required)
+       - 'answer': The answer to the question (required)
+       - 'backgroundColor': A suitable HEX color code for the card (optional)
+       - 'textColor': A complementary HEX color code for the text (optional)
+       - 'font': A font suggestion like 'serif', 'sans-serif', or 'monospace' (optional)
+       - 'difficulty': A difficulty level - 'easy', 'medium', or 'hard' (optional)
+       - 'tags': An array of 1-3 relevant topic tags (optional)
+    
+    2. A 'setInfo' object containing:
+       - 'title': A concise title for this flashcard set (optional)
+       - 'description': A brief description of what this set covers (optional)
+       - 'category': A category for the flashcard set such as "Science", "History", etc. (optional)
 
     For example:
     {
       "flashcards": [
         {
           "question": "What is photosynthesis?",
-          "answer": "The process by which green plants and some other organisms use sunlight to synthesize nutrients from carbon dioxide and water."
+          "answer": "The process by which green plants and some other organisms use sunlight to synthesize nutrients from carbon dioxide and water.",
+          "backgroundColor": "#e6f7e9",
+          "textColor": "#2c5e2e",
+          "font": "sans-serif",
+          "difficulty": "medium",
+          "tags": ["Biology", "Plants", "Energy"]
         },
         {
           "question": "What are the products of photosynthesis?",
-          "answer": "Glucose and oxygen."
+          "answer": "Glucose and oxygen.",
+          "backgroundColor": "#e1f5fe",
+          "textColor": "#0277bd",
+          "font": "sans-serif",
+          "difficulty": "easy",
+          "tags": ["Biology", "Chemistry"]
         }
-      ]
+      ],
+      "setInfo": {
+        "title": "Photosynthesis Fundamentals",
+        "description": "Basic concepts of how plants convert light energy to chemical energy",
+        "category": "Biology"
+      }
     }
     
-    Generate flashcards from this text: ${text}`;
+    Analyze and generate flashcards from this text: ${text}`;
     
     const result = await model.generateContent({
       contents: [{ role: "user", parts: [{ text: prompt }] }],
@@ -109,6 +155,23 @@ export async function generateFlashcardsWithGemini(text: string): Promise<{ flas
     
     try {
       const flashcards = JSON.parse(jsonStr);
+      
+      // Ensure consistent structure even if some fields are missing
+      if (!flashcards.setInfo) {
+        flashcards.setInfo = {};
+      }
+      
+      // Clean up any unexpected properties
+      flashcards.flashcards = flashcards.flashcards.map((card: any) => ({
+        question: card.question,
+        answer: card.answer,
+        backgroundColor: card.backgroundColor,
+        textColor: card.textColor,
+        font: card.font,
+        difficulty: card.difficulty,
+        tags: card.tags || []
+      }));
+      
       return flashcards;
     } catch (parseError) {
       console.error("Error parsing JSON from Gemini response:", parseError);
