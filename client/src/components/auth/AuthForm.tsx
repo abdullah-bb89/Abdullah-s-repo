@@ -126,17 +126,31 @@ export default function AuthForm() {
   };
 
   return (
-    <div className="max-w-md w-full bg-white rounded-xl shadow-md overflow-hidden p-8 space-y-8 transition-all duration-300">
+    <div className="max-w-md w-full rounded-xl shadow-lg overflow-hidden p-8 space-y-8 transition-all duration-300" 
+      style={{ 
+        backgroundColor: 'var(--color-steel-graphite)',
+        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2)'
+      }}
+    >
       <div className="text-center">
         <div className="flex justify-center">
-          <div className="h-12 w-12 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+          <div className="h-14 w-14 rounded-full flex items-center justify-center" 
+            style={{ 
+              backgroundColor: 'var(--color-razor-crimson)',
+              boxShadow: '0 0 15px rgba(216, 27, 96, 0.7)'
+            }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="white">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
           </div>
         </div>
-        <h2 className="mt-6 text-3xl font-bold text-gray-900">FlashKnowledge</h2>
-        <p className="mt-2 text-sm text-gray-600">Your personal learning assistant</p>
+        <h2 className="mt-6 text-3xl font-bold" style={{ color: 'var(--color-blazing-amber)' }}>
+          FlashGenius
+        </h2>
+        <p className="mt-2 text-sm" style={{ color: 'white' }}>
+          AI-powered learning, simplified
+        </p>
       </div>
 
       {isLogin ? (
@@ -147,16 +161,22 @@ export default function AuthForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel style={{ color: 'white' }}>Email</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="you@example.com" 
                       {...field} 
                       type="email"
                       autoComplete="email"
+                      className="input-custom border-2"
+                      style={{ 
+                        backgroundColor: 'rgba(255,255,255,0.1)', 
+                        borderColor: 'var(--color-blazing-amber)',
+                        color: 'white'
+                      }}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage style={{ color: 'var(--color-neon-lime)' }} />
                 </FormItem>
               )}
             />
@@ -165,16 +185,22 @@ export default function AuthForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel style={{ color: 'white' }}>Password</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="••••••••" 
                       {...field} 
                       type="password"
                       autoComplete="current-password"
+                      className="input-custom border-2"
+                      style={{ 
+                        backgroundColor: 'rgba(255,255,255,0.1)', 
+                        borderColor: 'var(--color-blazing-amber)',
+                        color: 'white'
+                      }}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage style={{ color: 'var(--color-neon-lime)' }} />
                 </FormItem>
               )}
             />
@@ -189,14 +215,15 @@ export default function AuthForm() {
                       <Checkbox 
                         checked={field.value}
                         onCheckedChange={field.onChange}
+                        className="border-amber-500 text-amber-500 data-[state=checked]:bg-amber-500 data-[state=checked]:text-white"
                       />
                     </FormControl>
-                    <FormLabel className="cursor-pointer">Remember me</FormLabel>
+                    <FormLabel className="cursor-pointer text-white">Remember me</FormLabel>
                   </FormItem>
                 )}
               />
               <div className="text-sm">
-                <a href="#" className="font-medium text-primary-600 hover:text-primary-500">
+                <a href="#" className="font-medium hover:text-amber-300" style={{ color: 'var(--color-blazing-amber)' }}>
                   Forgot password?
                 </a>
               </div>
@@ -206,6 +233,14 @@ export default function AuthForm() {
               type="submit" 
               className="w-full"
               disabled={isLoading}
+              style={{ 
+                backgroundColor: 'var(--color-razor-crimson)',
+                color: 'white',
+                fontSize: '1rem',
+                padding: '0.6rem 1.2rem',
+                transition: 'all 0.2s ease-in-out',
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)'
+              }}
             >
               {isLoading ? "Signing in..." : "Sign in"}
             </Button>
@@ -219,16 +254,22 @@ export default function AuthForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel style={{ color: 'white' }}>Email</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="you@example.com" 
                       {...field} 
                       type="email"
                       autoComplete="email"
+                      className="input-custom border-2"
+                      style={{ 
+                        backgroundColor: 'rgba(255,255,255,0.1)', 
+                        borderColor: 'var(--color-blazing-amber)',
+                        color: 'white'
+                      }}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage style={{ color: 'var(--color-neon-lime)' }} />
                 </FormItem>
               )}
             />
@@ -237,16 +278,22 @@ export default function AuthForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel style={{ color: 'white' }}>Password</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="••••••••" 
                       {...field} 
                       type="password"
                       autoComplete="new-password"
+                      className="input-custom border-2"
+                      style={{ 
+                        backgroundColor: 'rgba(255,255,255,0.1)', 
+                        borderColor: 'var(--color-blazing-amber)',
+                        color: 'white'
+                      }}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage style={{ color: 'var(--color-neon-lime)' }} />
                 </FormItem>
               )}
             />
@@ -255,16 +302,22 @@ export default function AuthForm() {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirm Password</FormLabel>
+                  <FormLabel style={{ color: 'white' }}>Confirm Password</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="••••••••" 
                       {...field} 
                       type="password"
                       autoComplete="new-password"
+                      className="input-custom border-2"
+                      style={{ 
+                        backgroundColor: 'rgba(255,255,255,0.1)', 
+                        borderColor: 'var(--color-blazing-amber)',
+                        color: 'white'
+                      }}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage style={{ color: 'var(--color-neon-lime)' }} />
                 </FormItem>
               )}
             />
@@ -273,6 +326,14 @@ export default function AuthForm() {
               type="submit" 
               className="w-full"
               disabled={isLoading}
+              style={{ 
+                backgroundColor: 'var(--color-razor-crimson)',
+                color: 'white',
+                fontSize: '1rem',
+                padding: '0.6rem 1.2rem',
+                transition: 'all 0.2s ease-in-out',
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)'
+              }}
             >
               {isLoading ? "Signing up..." : "Sign up"}
             </Button>
@@ -282,21 +343,24 @@ export default function AuthForm() {
 
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
-          <Separator className="w-full" />
+          <Separator className="w-full" style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }} />
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="px-2 bg-white text-gray-500">Or continue with</span>
+          <span className="px-2 text-white" style={{ backgroundColor: 'var(--color-steel-graphite)' }}>
+            Or continue with
+          </span>
         </div>
       </div>
 
       <GoogleSignIn />
 
       <div className="text-center mt-4">
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-white">
           {isLogin ? "Don't have an account?" : "Already have an account?"}
           <button
             type="button"
-            className="ml-2 font-medium text-primary-600 hover:text-primary-500 focus:outline-none"
+            className="ml-2 font-medium focus:outline-none transition-colors"
+            style={{ color: 'var(--color-blazing-amber)' }}
             onClick={toggleAuthMode}
           >
             {isLogin ? "Sign up" : "Sign in"}

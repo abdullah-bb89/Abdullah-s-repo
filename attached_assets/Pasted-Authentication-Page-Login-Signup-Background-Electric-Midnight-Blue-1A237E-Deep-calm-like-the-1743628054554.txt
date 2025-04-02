@@ -1,0 +1,52 @@
+Authentication Page (Login/Signup)
+Background: Electric Midnight Blue (#1A237E)
+Deep, calm, like the night sky before the action starts—sets a strong, welcoming base.
+Text (Labels like “Email,” “Password”): Steel Graphite (#455A64)
+Cool and grounded, easy to read against the dark blue, keeps it clean.
+Input Fields: Steel Graphite (#455A64) with a thin Blazing Amber (#FFA000) border
+Subtle but with a warm glow—hints at the fire to come.
+Button (“Login” or “Sign Up”): Razor Crimson (#D81B60)
+Bold, magnetic, the first taste of that fierce energy—makes you want to tap it. Hover or active? A splash of Neon Lime Punch (#C6FF00) for a zesty kick.
+Vibe: Mysterious yet inviting—like a secret club you’re about to join.
+Main App Page (Query Input)
+Background: Electric Midnight Blue (#1A237E)
+Keeps the continuity, a dark canvas for your knowledge quest.
+Title (“Ask Away” or App Name): Razor Crimson (#D81B60)
+Pops off the screen, sets the tone—this is where the magic starts.
+Input Field (Where you type your question): Steel Graphite (#455A64) with a Razor Crimson (#D81B60) outline
+Ties it to the theme, makes the question feel important.
+Generate Button: Razor Crimson (#D81B60) with a Blazing Amber (#FFA000) glow on hover
+Crimson drives the action, amber adds that fiery spark—like igniting knowledge.
+Vibe: Bold, curious—like a launchpad for your brain.
+Knowledge Display Page (After Query)
+Background: Electric Midnight Blue (#1A237E)
+Stays consistent, lets the content shine.
+Generated Knowledge Text: Blazing Amber (#FFA000)
+Warm, vibrant, like the light of understanding breaking through.
+Headings or Key Points: Razor Crimson (#D81B60)
+Highlights the big ideas, keeps that sharp edge.
+Next Button (To Flashcards): Razor Crimson (#D81B60) with Neon Lime Punch (#C6FF00) accents
+Crimson leads, lime teases the next step—electric and alive.
+Vibe: Illuminating, intense—like a revelation hitting you.
+Flashcards Page
+Background: Electric Midnight Blue (#1A237E)
+The dark base keeps the focus on the cards.
+Card Front (Question): Steel Graphite (#455A64) with Razor Crimson (#D81B60) text
+Solid and sleek, crimson questions grab your attention.
+Card Back (Answer): Razor Crimson (#D81B60) with Blazing Amber (#FFA000) text
+Crimson as the foundation, amber answers feel like gold nuggets.
+Flip Animation: A flash of Neon Lime Punch (#C6FF00) as it turns
+Quick, sharp, like a jolt of excitement.
+Save Button: Razor Crimson (#D81B60)
+Ties it all together—save that knowledge with confidence.
+Vibe: Snappy, rewarding—like flipping through a deck of secrets.
+Saved Flashcards Page (Review)
+Background: Electric Midnight Blue (#1A237E)
+Familiar, steady, your knowledge vault.
+List or Grid of Cards: Steel Graphite (#455A64) bases with Razor Crimson (#D81B60) titles
+Each card feels distinct, crimson calling out what you’ve learned.
+Selected Card Text: Blazing Amber (#FFA000)
+Warm and bold, like revisiting a treasure.
+Delete/Edit Buttons: Razor Crimson (#D81B60) with Neon Lime Punch (#C6FF00) hover
+Crimson for control, lime for that extra zing.
+Vibe: Nostalgic, powerful—like flipping through your own mind’s highlights.

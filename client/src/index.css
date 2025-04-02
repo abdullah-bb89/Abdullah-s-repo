@@ -3,12 +3,38 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    /* Custom color palette based on user preferences */
+    --color-midnight-blue: #1A237E;
+    --color-steel-graphite: #455A64;
+    --color-razor-crimson: #D81B60;
+    --color-blazing-amber: #FFA000;
+    --color-neon-lime: #C6FF00;
+  }
+
   * {
     @apply border-border;
   }
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
+    background-color: var(--color-midnight-blue);
+  }
+  
+  /* Custom button styles */
+  .btn-primary {
+    @apply bg-[#D81B60] hover:bg-[#FFA000] text-white font-bold py-2 px-4 rounded;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-secondary {
+    @apply bg-[#455A64] hover:bg-[#C6FF00] hover:text-black text-white font-bold py-2 px-4 rounded;
+    transition: all 0.3s ease;
+  }
+  
+  /* Custom input field styles */
+  .input-custom {
+    @apply bg-[#455A64] border-[#FFA000] text-white placeholder-gray-300;
   }
 }
 
