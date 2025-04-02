@@ -73,7 +73,8 @@ export const flashcardGenerationSchema = z.object({
       textColor: z.string().optional(),
       font: z.string().optional(),
       difficulty: z.string().optional(),
-      tags: z.array(z.string()).optional()
+      tags: z.array(z.string()).optional(),
+      imageUrl: z.string().optional()
     })
   ),
   setInfo: z.object({

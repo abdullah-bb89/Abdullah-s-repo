@@ -39,6 +39,18 @@ export class MemStorage implements IStorage {
     this.currentUserId = 1;
     this.currentFlashcardId = 1;
     this.currentFlashcardSetId = 1;
+    
+    // Create a default test user to fix the "User not found" issue
+    const testUser: User = {
+      id: 1,
+      username: "testuser",
+      email: "test@example.com",
+      password: null,
+      displayName: "Test User",
+      photoURL: null,
+      firebaseUid: "test-firebase-uid"
+    };
+    this.users.set(testUser.id, testUser);
   }
 
   // User operations
