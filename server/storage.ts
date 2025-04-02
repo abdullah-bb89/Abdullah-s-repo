@@ -78,7 +78,17 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentUserId++;
-    const user: User = { ...insertUser, id };
+    
+    // Ensure null values for nullable fields
+    const user: User = { 
+      ...insertUser, 
+      id,
+      displayName: insertUser.displayName ?? null,
+      password: insertUser.password ?? null,
+      photoURL: insertUser.photoURL ?? null,
+      firebaseUid: insertUser.firebaseUid ?? null
+    };
+    
     this.users.set(id, user);
     return user;
   }
@@ -86,7 +96,19 @@ export class MemStorage implements IStorage {
   // Flashcard operations
   async createFlashcard(insertFlashcard: InsertFlashcard): Promise<Flashcard> {
     const id = this.currentFlashcardId++;
-    const flashcard: Flashcard = { ...insertFlashcard, id };
+    
+    // Ensure null values for nullable fields
+    const flashcard: Flashcard = { 
+      ...insertFlashcard, 
+      id,
+      backgroundColor: insertFlashcard.backgroundColor ?? null,
+      textColor: insertFlashcard.textColor ?? null,
+      font: insertFlashcard.font ?? null,
+      difficulty: insertFlashcard.difficulty ?? null,
+      tags: insertFlashcard.tags ?? [],
+      imageUrl: insertFlashcard.imageUrl ?? null
+    };
+    
     this.flashcards.set(id, flashcard);
     return flashcard;
   }
@@ -101,11 +123,18 @@ export class MemStorage implements IStorage {
   async createFlashcardSet(insertFlashcardSet: InsertFlashcardSet): Promise<FlashcardSet> {
     const id = this.currentFlashcardSetId++;
     const now = new Date();
+    
+    // Ensure null values for nullable fields
     const flashcardSet: FlashcardSet = { 
       ...insertFlashcardSet, 
       id, 
-      createdAt: now
+      createdAt: now,
+      description: insertFlashcardSet.description ?? null,
+      category: insertFlashcardSet.category ?? null,
+      isPublic: insertFlashcardSet.isPublic ?? false,
+      defaultCardStyle: insertFlashcardSet.defaultCardStyle ?? null
     };
+    
     this.flashcardSets.set(id, flashcardSet);
     return flashcardSet;
   }

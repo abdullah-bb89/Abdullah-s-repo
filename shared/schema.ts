@@ -5,11 +5,11 @@ import { z } from "zod";
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
-  password: text("password"),
+  password: text("password"), // This should be null for users signed in via Firebase
   email: text("email").notNull().unique(),
-  displayName: text("display_name"),
-  photoURL: text("photo_url"),
-  firebaseUid: text("firebase_uid").unique(),
+  displayName: text("display_name"), // Optional
+  photoURL: text("photo_url"), // Optional
+  firebaseUid: text("firebase_uid").unique(), // Optional for local accounts
 });
 
 export const flashcards = pgTable("flashcards", {

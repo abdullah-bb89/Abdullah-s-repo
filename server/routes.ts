@@ -154,6 +154,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Direct quiz generation endpoint
+  app.post("/api/quiz/generate", async (req: Request, res: Response) => {
+    try {
+      const { topic } = req.body;
+      
+      if (!topic || typeof topic !== "string") {
+        return res.status(400).json({ message: "Topic is required" });
+      }
+      
+      // First, generate knowledge on the topic
+      const knowledge = await generateKnowledgeWithGemini(topic);
+      
+      // Then, generate flashcards from that knowledge
+      const flashcards = await generateFlashcardsWithGemini(knowledge);
+      
+      // Validate the response structure
+      const validatedFlashcards = flashcardGenerationSchema.parse(flashcards);
+      
+      // Return both knowledge and flashcards
+      res.status(200).json({
+        knowledge,
+        flashcards: validatedFlashcards
+      });
+    } catch (error) {
+      console.error("Direct quiz generation error:", error);
+      
+      // Check if this is a quota or error related to the API key
+      if ((error as Error).message && (
+          (error as Error).message.includes('quota') || 
+          (error as Error).message.includes('API key') ||
+          (error as Error).message.includes('invalid key')
+        )) {
+        return res.status(429).json({ 
+          message: "API quota exceeded or invalid key. Please try again later or contact the administrator.",
+          error: "api_error"
+        });
+      }
+      
+      // Check if this is a JSON parsing error
+      if ((error as Error).message && (error as Error).message.includes('parse')) {
+        return res.status(500).json({ 
+          message: "Failed to parse AI response. Please try again.",
+          error: "parsing_error"
+        });
+      }
+      
+      res.status(500).json({ message: "Failed to generate quiz" });
+    }
+  });
+  
   // Flashcard set routes
   app.post("/api/flashcard-sets", async (req: Request, res: Response) => {
     try {

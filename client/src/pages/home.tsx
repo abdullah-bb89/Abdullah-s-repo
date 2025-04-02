@@ -28,6 +28,7 @@ export default function HomePage() {
   const [quizMode, setQuizMode] = useState(false);
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [quizScore, setQuizScore] = useState({ score: 0, total: 0 });
+  const [directQuizGenerated, setDirectQuizGenerated] = useState(false);
 
   // Auth redirect effect
   useEffect(() => {
@@ -146,6 +147,11 @@ export default function HomePage() {
   const handleCancelQuiz = () => {
     setQuizMode(false);
     setQuizCompleted(false);
+    
+    // Reset direct quiz state if needed
+    if (directQuizGenerated) {
+      setDirectQuizGenerated(false);
+    }
   };
   
   const handleQuizComplete = (score: number, total: number) => {
@@ -155,6 +161,26 @@ export default function HomePage() {
     toast({
       title: "Quiz completed!",
       description: `You scored ${score} out of ${total} questions.`,
+    });
+  };
+  
+  // Direct quiz generation handler
+  const handleDirectQuizRequested = (question: string, knowledge: string, generatedFlashcards: FlashcardGeneration) => {
+    // Set all the necessary state in one go
+    setCurrentQuestion(question);
+    setKnowledgeResult(knowledge);
+    setFlashcards(generatedFlashcards);
+    setQuizMode(true);
+    setDirectQuizGenerated(true);
+    
+    // Scroll to quiz section after short delay to allow rendering
+    setTimeout(() => {
+      document.getElementById("quiz-section")?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+    
+    toast({
+      title: "Quiz Created",
+      description: "Quiz has been generated based on your topic. Good luck!",
     });
   };
 
@@ -169,7 +195,10 @@ export default function HomePage() {
             <p className="mt-1 text-sm text-gray-500">Ask anything and turn knowledge into flashcards</p>
             
             <div className="mt-6">
-              <KnowledgeForm onKnowledgeGenerated={handleKnowledgeGenerated} />
+              <KnowledgeForm 
+                onKnowledgeGenerated={handleKnowledgeGenerated}
+                onQuizRequested={handleDirectQuizRequested}
+              />
             </div>
             
             {knowledgeResult && (
@@ -254,7 +283,7 @@ export default function HomePage() {
                         <div className="mt-4 flex justify-center space-x-4">
                           <Button onClick={handleCancelQuiz} variant="outline">
                             <BookOpen className="mr-2 h-4 w-4" />
-                            Return to Flashcards
+                            {directQuizGenerated ? "Return to Home" : "Return to Flashcards"}
                           </Button>
                           <Button onClick={handleStartQuiz}>
                             <PenTool className="mr-2 h-4 w-4" />

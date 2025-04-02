@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2 } from "lucide-react";
+import { Loader2, BookOpen, PenTool } from "lucide-react";
 import { generateKnowledge } from "@/lib/openai";
 import { useToast } from "@/hooks/use-toast";
 
@@ -29,11 +29,29 @@ type FormValues = z.infer<typeof formSchema>;
 
 interface KnowledgeFormProps {
   onKnowledgeGenerated: (question: string, answer: string) => void;
+  onQuizRequested?: (question: string, knowledge: string, flashcards: any) => void;
 }
 
-export default function KnowledgeForm({ onKnowledgeGenerated }: KnowledgeFormProps) {
+export default function KnowledgeForm({ onKnowledgeGenerated, onQuizRequested }: KnowledgeFormProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [isQuizLoading, setIsQuizLoading] = useState(false);
   const { toast } = useToast();
+  const apiRequest = async (method: string, url: string, data?: any) => {
+    const response = await fetch(url, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: data ? JSON.stringify(data) : undefined,
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `Request failed with status ${response.status}`);
+    }
+    
+    return response.json();
+  };
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -70,6 +88,57 @@ export default function KnowledgeForm({ onKnowledgeGenerated }: KnowledgeFormPro
       setIsLoading(false);
     }
   };
+  
+  const handleTakeQuiz = async () => {
+    const question = form.getValues("question");
+    
+    if (!question || question.length < 5) {
+      form.setError("question", { 
+        type: "manual", 
+        message: "Please enter a valid topic to create a quiz" 
+      });
+      return;
+    }
+    
+    setIsQuizLoading(true);
+    try {
+      const response = await apiRequest("POST", "/api/quiz/generate", { topic: question });
+      
+      if (onQuizRequested) {
+        onQuizRequested(question, response.knowledge, response.flashcards);
+      } else {
+        // Fallback if the parent component doesn't implement onQuizRequested
+        toast({
+          title: "Quiz Created",
+          description: "Your quiz is ready. Please scroll down to take it.",
+        });
+        
+        // Use the regular flow if we don't have a direct quiz handler
+        onKnowledgeGenerated(question, response.knowledge);
+      }
+    } catch (error) {
+      let message = "Failed to generate quiz";
+      let title = "Error";
+      
+      if (error instanceof Error) {
+        message = error.message;
+        
+        // Check for quota exceeded error
+        if (message.includes("quota") || message.includes("insufficient_quota")) {
+          title = "API Quota Exceeded";
+          message = "The API quota has been exceeded. Please try again later.";
+        }
+      }
+      
+      toast({
+        variant: "destructive",
+        title: title,
+        description: message,
+      });
+    } finally {
+      setIsQuizLoading(false);
+    }
+  };
 
   return (
     <Card>
@@ -94,10 +163,31 @@ export default function KnowledgeForm({ onKnowledgeGenerated }: KnowledgeFormPro
                 </FormItem>
               )}
             />
-            <div className="mt-4 flex justify-end">
+            <div className="mt-4 flex justify-end space-x-3">
+              <Button
+                type="button"
+                variant="outline"
+                disabled={isQuizLoading || isLoading}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleTakeQuiz();
+                }}
+              >
+                {isQuizLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating quiz...
+                  </>
+                ) : (
+                  <>
+                    <PenTool className="mr-2 h-4 w-4" />
+                    Take a Quiz
+                  </>
+                )}
+              </Button>
               <Button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || isQuizLoading}
               >
                 {isLoading ? (
                   <>
@@ -105,7 +195,10 @@ export default function KnowledgeForm({ onKnowledgeGenerated }: KnowledgeFormPro
                     Generating...
                   </>
                 ) : (
-                  "Generate"
+                  <>
+                    <BookOpen className="mr-2 h-4 w-4" />
+                    Generate
+                  </>
                 )}
               </Button>
             </div>
