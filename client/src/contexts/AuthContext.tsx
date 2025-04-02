@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { subscribeToAuthChanges, syncUser } from "@/lib/firebase";
-import { auth } from "firebase/auth";
 
 interface User {
   id: number;

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -22,18 +22,20 @@ export default function HomePage() {
   const [flashcards, setFlashcards] = useState<FlashcardGeneration | null>(null);
   const [saving, setSaving] = useState(false);
 
+  // Auth redirect effect
+  useEffect(() => {
+    if (!loading && !user) {
+      // Redirect to auth page if not authenticated
+      setLocation("/auth");
+    }
+  }, [user, loading, setLocation]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
       </div>
     );
-  }
-
-  if (!user) {
-    // Redirect to auth page if not authenticated
-    setLocation("/auth");
-    return null;
   }
 
   const handleKnowledgeGenerated = (question: string, answer: string) => {
@@ -52,11 +54,11 @@ export default function HomePage() {
   };
 
   const handleSaveFlashcards = async () => {
-    if (!flashcards || !currentQuestion || !knowledgeResult) {
+    if (!user || !flashcards || !currentQuestion || !knowledgeResult) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "No flashcards to save",
+        description: "No flashcards to save or user not logged in",
       });
       return;
     }
