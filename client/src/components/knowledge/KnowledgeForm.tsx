@@ -49,12 +49,21 @@ export default function KnowledgeForm({ onKnowledgeGenerated }: KnowledgeFormPro
       onKnowledgeGenerated(data.question, answer);
     } catch (error) {
       let message = "Failed to generate knowledge";
+      let title = "Error";
+      
       if (error instanceof Error) {
         message = error.message;
+        
+        // Check for quota exceeded error
+        if (message.includes("quota") || message.includes("insufficient_quota")) {
+          title = "API Quota Exceeded";
+          message = "The OpenAI API quota has been exceeded. Please try again later or contact the administrator to update the API key.";
+        }
       }
+      
       toast({
         variant: "destructive",
-        title: "Error",
+        title: title,
         description: message,
       });
     } finally {

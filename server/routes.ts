@@ -114,6 +114,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(200).json({ answer });
     } catch (error) {
       console.error("OpenAI API error:", error);
+      
+      // Check if this is a quota exceeded error
+      if ((error as any).error?.type === 'insufficient_quota' || 
+          ((error as Error).message && (error as Error).message.includes('quota'))) {
+        return res.status(429).json({ 
+          message: "API quota exceeded. Please try again later or contact the administrator.",
+          error: "insufficient_quota"
+        });
+      }
+      
       res.status(500).json({ message: "Failed to generate knowledge" });
     }
   });
@@ -144,12 +154,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         temperature: 0.7,
       });
       
-      const responseJson = JSON.parse(completion.choices[0].message.content);
+      const content = completion.choices[0].message.content as string;
+      const responseJson = JSON.parse(content);
       const flashcards = flashcardGenerationSchema.parse(responseJson);
       
       res.status(200).json(flashcards);
     } catch (error) {
       console.error("Flashcard generation error:", error);
+      
+      // Check if this is a quota exceeded error
+      if ((error as any).error?.type === 'insufficient_quota' || 
+          ((error as Error).message && (error as Error).message.includes('quota'))) {
+        return res.status(429).json({ 
+          message: "API quota exceeded. Please try again later or contact the administrator.",
+          error: "insufficient_quota"
+        });
+      }
+      
       res.status(500).json({ message: "Failed to generate flashcards" });
     }
   });
