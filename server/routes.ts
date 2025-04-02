@@ -10,12 +10,7 @@ import {
   type InsertFlashcardSet,
   type InsertFlashcard
 } from "@shared/schema";
-import OpenAI from "openai";
-
-// Initialize OpenAI API
-const openai = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY || "sk-dummy-key-for-development" 
-});
+import { generateKnowledgeWithGemini, generateFlashcardsWithGemini } from "./gemini";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
@@ -93,34 +88,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Question is required" });
       }
       
-      // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: "You are a helpful, educational assistant. Answer the user's question thoroughly but concisely in a way that would be useful for learning. Format your response with clear paragraphs, bullet points where appropriate, and use markdown for emphasis."
-          },
-          {
-            role: "user",
-            content: question
-          }
-        ],
-        temperature: 0.7,
-      });
-      
-      const answer = completion.choices[0].message.content;
+      // Use Gemini API to generate knowledge
+      const answer = await generateKnowledgeWithGemini(question);
       
       res.status(200).json({ answer });
     } catch (error) {
-      console.error("OpenAI API error:", error);
+      console.error("Gemini API error:", error);
       
-      // Check if this is a quota exceeded error
-      if ((error as any).error?.type === 'insufficient_quota' || 
-          ((error as Error).message && (error as Error).message.includes('quota'))) {
+      // Check if this is a quota or error related to the API key
+      if ((error as Error).message && (
+          (error as Error).message.includes('quota') || 
+          (error as Error).message.includes('API key') ||
+          (error as Error).message.includes('invalid key')
+        )) {
         return res.status(429).json({ 
-          message: "API quota exceeded. Please try again later or contact the administrator.",
-          error: "insufficient_quota"
+          message: "API quota exceeded or invalid key. Please try again later or contact the administrator.",
+          error: "api_error"
         });
       }
       
@@ -137,37 +120,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Text is required" });
       }
       
-      // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: "You are a helpful, educational assistant. Your task is to generate flashcards from the provided text. Create between 3-8 flashcards with clear questions and concise answers. Return your response as a JSON object with a 'flashcards' array containing objects with 'question' and 'answer' fields."
-          },
-          {
-            role: "user",
-            content: `Generate flashcards from this text: ${text}`
-          }
-        ],
-        response_format: { type: "json_object" },
-        temperature: 0.7,
-      });
+      // Use Gemini API to generate flashcards
+      const flashcards = await generateFlashcardsWithGemini(text);
       
-      const content = completion.choices[0].message.content as string;
-      const responseJson = JSON.parse(content);
-      const flashcards = flashcardGenerationSchema.parse(responseJson);
+      // Validate the response structure against our schema
+      const validatedFlashcards = flashcardGenerationSchema.parse(flashcards);
       
-      res.status(200).json(flashcards);
+      res.status(200).json(validatedFlashcards);
     } catch (error) {
       console.error("Flashcard generation error:", error);
       
-      // Check if this is a quota exceeded error
-      if ((error as any).error?.type === 'insufficient_quota' || 
-          ((error as Error).message && (error as Error).message.includes('quota'))) {
+      // Check if this is a quota or error related to the API key
+      if ((error as Error).message && (
+          (error as Error).message.includes('quota') || 
+          (error as Error).message.includes('API key') ||
+          (error as Error).message.includes('invalid key')
+        )) {
         return res.status(429).json({ 
-          message: "API quota exceeded. Please try again later or contact the administrator.",
-          error: "insufficient_quota"
+          message: "API quota exceeded or invalid key. Please try again later or contact the administrator.",
+          error: "api_error"
+        });
+      }
+      
+      // Check if this is a JSON parsing error
+      if ((error as Error).message && (error as Error).message.includes('parse')) {
+        return res.status(500).json({ 
+          message: "Failed to parse AI response into valid flashcards. Please try again.",
+          error: "parsing_error"
         });
       }
       
