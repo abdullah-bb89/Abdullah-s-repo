@@ -33,8 +33,8 @@ const safetySettings = [
 // Function to generate knowledge
 export async function generateKnowledgeWithGemini(question: string): Promise<string> {
   try {
-    // For text-only input, use the gemini-pro model
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    // For text-only input, use the gemini-1.5-pro model (updated from gemini-pro)
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
     
     const prompt = `You are a helpful, educational assistant. Answer the following question thoroughly but concisely in a way that would be useful for learning. Format your response with clear paragraphs, bullet points where appropriate, and use markdown for emphasis.
     
@@ -62,8 +62,8 @@ export async function generateKnowledgeWithGemini(question: string): Promise<str
 // Function to generate flashcards
 export async function generateFlashcardsWithGemini(text: string): Promise<{ flashcards: Array<{ question: string, answer: string }> }> {
   try {
-    // For text-only input, use the gemini-pro model
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    // For text-only input, use the gemini-1.5-pro model (updated from gemini-pro)
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
     
     const prompt = `You are a helpful, educational assistant. Your task is to generate flashcards from the provided text. Create between 3-8 flashcards with clear questions and concise answers. Return your response as a JSON object with a 'flashcards' array containing objects with 'question' and 'answer' fields.
 
