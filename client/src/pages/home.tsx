@@ -10,6 +10,7 @@ import Header from "@/components/layout/Header";
 import KnowledgeForm from "@/components/knowledge/KnowledgeForm";
 import KnowledgeResult from "@/components/knowledge/KnowledgeResult";
 import FlashcardQuiz from "@/components/flashcards/FlashcardQuiz";
+import DueReviews from "@/components/flashcards/DueReviews";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -415,6 +416,9 @@ export default function HomePage() {
         <div className="animate-float absolute bottom-[25%] right-[20%] w-20 h-20 rounded-full opacity-10" 
           style={{ backgroundColor: 'var(--color-razor-crimson)' }}></div>
       </div>
+      
+      {/* Due Reviews Floating UI */}
+      <DueReviews />
     </div>
   );
 }

@@ -120,6 +120,7 @@ export default function FlashcardSet({ setId }: FlashcardSetProps) {
         {flashcards.map((card: Flashcard, index: number) => (
           <FlashCard
             key={card.id}
+            id={card.id}
             question={card.question}
             answer={card.answer}
             index={index}
