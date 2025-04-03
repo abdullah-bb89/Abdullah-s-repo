@@ -3,6 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { signInWithEmail, signUpWithEmail } from "@/lib/firebase";
+import { loginLocalUser, registerLocalUser } from "@/lib/localAuth";
 import { useToast } from "@/hooks/use-toast";
 import GoogleSignIn from "./GoogleSignIn";
 
@@ -84,8 +85,31 @@ export default function AuthForm() {
         return;
       }
       
-      await signInWithEmail(data.email, data.password);
-      // Firebase auth state will be handled by the AuthContext
+      // Try local authentication first
+      const localUser = loginLocalUser(data.email, data.password);
+      if (localUser) {
+        toast({
+          title: "Login Successful",
+          description: "Welcome back!",
+        });
+        // Page will reload automatically as the auth context detects the user
+        window.location.href = "/";
+        return;
+      }
+      
+      // Fall back to Firebase authentication
+      try {
+        await signInWithEmail(data.email, data.password);
+        // Firebase auth state will be handled by the AuthContext
+      } catch (firebaseError) {
+        // If Firebase fails, show a custom error but don't break the flow
+        console.error("Firebase auth error:", firebaseError);
+        toast({
+          variant: "destructive",
+          title: "Authentication Error",
+          description: "Could not authenticate with Firebase. Using local authentication instead.",
+        });
+      }
     } catch (error) {
       let message = "Failed to sign in";
       if (error instanceof Error) {
@@ -104,8 +128,33 @@ export default function AuthForm() {
   const onSignupSubmit = async (data: SignupFormValues) => {
     setIsLoading(true);
     try {
-      await signUpWithEmail(data.email, data.password);
-      // Firebase auth state will be handled by the AuthContext
+      // Try local registration first
+      const localUser = registerLocalUser(data.email, data.password);
+      if (localUser) {
+        toast({
+          title: "Registration Successful",
+          description: "Your account has been created! You can now sign in.",
+        });
+        
+        // Automatically switch to login
+        setIsLogin(true);
+        setIsLoading(false);
+        return;
+      }
+      
+      // Fall back to Firebase registration
+      try {
+        await signUpWithEmail(data.email, data.password);
+        // Firebase auth state will be handled by the AuthContext
+      } catch (firebaseError) {
+        // If Firebase fails, show a custom error but don't break the flow
+        console.error("Firebase registration error:", firebaseError);
+        toast({
+          variant: "destructive",
+          title: "Firebase Registration Error",
+          description: "Could not register with Firebase. Using local registration instead.",
+        });
+      }
     } catch (error) {
       let message = "Failed to sign up";
       if (error instanceof Error) {

@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import { logout } from "@/lib/firebase";
+import { logoutLocalUser } from "@/lib/localAuth";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { LogOut } from "lucide-react";
 
 export default function UserMenu() {
   const [isOpen, setIsOpen] = useState(false);
-  const { user } = useAuth();
+  const { user, authType } = useAuth();
   const { toast } = useToast();
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -38,9 +39,24 @@ export default function UserMenu() {
         return;
       }
       
+      // Handle logout based on auth type
+      if (authType === 'local' || user?.isLocalUser) {
+        // Local authentication logout
+        logoutLocalUser();
+        window.location.href = "/auth"; // Force reload to update auth state
+        return;
+      }
+      
       // Regular Firebase logout
-      await logout();
-      // Firebase auth state will be handled by the AuthContext
+      try {
+        await logout();
+        // Firebase auth state will be handled by the AuthContext
+      } catch (firebaseError) {
+        console.error("Firebase logout error:", firebaseError);
+        // Even if Firebase logout fails, try to clean up local state
+        logoutLocalUser();
+        window.location.href = "/auth";
+      }
     } catch (error) {
       let message = "Failed to sign out";
       if (error instanceof Error) {
@@ -51,6 +67,11 @@ export default function UserMenu() {
         title: "Error",
         description: message,
       });
+      
+      // Last resort: force a page reload to clean up the session
+      setTimeout(() => {
+        window.location.href = "/auth";
+      }, 1500);
     }
   };
 
