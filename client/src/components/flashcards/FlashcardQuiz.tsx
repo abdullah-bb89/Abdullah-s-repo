@@ -244,7 +244,7 @@ export default function FlashcardQuiz({ flashcards, onQuizComplete, onCancel }: 
               </Button>
               
               <Button 
-                onClick={() => setLocation("/")}
+                onClick={() => setLocation("/saved")}
                 className="px-6 py-5 font-medium text-base rounded-lg transition-all duration-200 hover:scale-105"
                 style={{ 
                   backgroundColor: 'var(--color-blazing-amber)',
@@ -252,7 +252,7 @@ export default function FlashcardQuiz({ flashcards, onQuizComplete, onCancel }: 
                 }}
               >
                 <span className="mr-2">✓</span>
-                Finish
+                View My Scores
               </Button>
             </div>
           </div>

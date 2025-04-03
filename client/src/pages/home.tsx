@@ -173,6 +173,9 @@ export default function HomePage() {
         
         // Invalidate the query to refresh the quiz scores
         queryClient.invalidateQueries({ queryKey: [`/api/users/${user.id}/quiz-scores`] });
+        
+        // We don't automatically redirect here because the user can view their quiz results 
+        // on the current page or click "View My Scores" to navigate to the saved page
       }
     } catch (error) {
       console.error("Failed to save quiz score:", error);
@@ -415,7 +418,7 @@ export default function HomePage() {
                             Try Again
                           </Button>
                           <Button 
-                            onClick={() => window.location.href = "/"}
+                            onClick={() => setLocation("/saved")}
                             className="px-5 py-3 rounded-xl transition-all duration-200 hover:scale-105"
                             style={{ 
                               backgroundColor: 'var(--color-razor-crimson)',
@@ -424,7 +427,7 @@ export default function HomePage() {
                             }}
                           >
                             <span className="mr-2">✓</span>
-                            Finish
+                            View My Scores
                           </Button>
                         </div>
                       </div>
