@@ -1,7 +1,8 @@
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
 
 // Access API key from environment variables
-const apiKey = process.env.GEMINI_API_KEY;
+// Use trim() to remove any whitespace that might have been included when setting the key
+const apiKey = process.env.GEMINI_API_KEY ? process.env.GEMINI_API_KEY.trim() : '';
 
 console.log('GEMINI_API_KEY available:', !!apiKey); // Debug - don't log actual key
 

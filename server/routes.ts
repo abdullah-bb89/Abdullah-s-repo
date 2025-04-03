@@ -51,7 +51,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { firebaseUid, email, displayName, photoURL } = req.body;
       
-      if (!firebaseUid || !email) {
+      if (!firebaseUid) {
         return res.status(400).json({ message: "Missing required fields" });
       }
       
@@ -59,12 +59,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let user = await storage.getUserByFirebaseUid(firebaseUid);
       
       if (!user) {
+        // For test/mock users, handle missing email case
+        const userEmail = email || "test@example.com";
+        
         // Create username from email
-        const username = email.split('@')[0] + Math.floor(Math.random() * 10000);
+        const username = userEmail.split('@')[0] + Math.floor(Math.random() * 10000);
         
         user = await storage.createUser({
           username,
-          email,
+          email: userEmail,
           firebaseUid,
           displayName: displayName || username,
           photoURL: photoURL || null,
@@ -75,8 +78,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Don't return password
       const { password, ...userWithoutPassword } = user;
       
+      // Log success
+      console.log("Firebase auth sync successful for uid:", firebaseUid);
+      
       res.status(200).json(userWithoutPassword);
     } catch (error) {
+      console.error("Firebase auth sync error:", error);
       res.status(500).json({ message: "Server error" });
     }
   });

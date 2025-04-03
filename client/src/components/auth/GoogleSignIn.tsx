@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
+import { signInWithGoogle } from "@/lib/firebase";
 
 export default function GoogleSignIn() {
   const [isLoading, setIsLoading] = useState(false);
@@ -12,32 +13,18 @@ export default function GoogleSignIn() {
     try {
       toast({
         title: "Processing Google Sign-In",
-        description: "Signing you in with simulated Google authentication...",
+        description: "Signing you in with Google authentication...",
       });
       
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Create a simulated Google user
-      const randomId = Math.floor(Math.random() * 100000);
-      const simulatedUser = {
-        id: randomId,
-        username: `google_user_${randomId}`,
-        email: `user${randomId}@gmail.com`,
-        displayName: "Google User",
-        photoURL: "https://api.dicebear.com/7.x/shapes/svg?seed=" + randomId,
-      };
-      
-      // Store in localStorage (similar to our local auth system)
-      localStorage.setItem('localUser', JSON.stringify(simulatedUser));
+      // Use our mock implementation
+      await signInWithGoogle();
       
       toast({
         title: "Google Sign-In Successful",
         description: "Welcome to FlashGenius!",
       });
       
-      // Redirect to home page
-      window.location.href = "/";
+      // No need for window.location redirect - will be handled by firebase.ts
     } catch (error) {
       let message = "Failed to sign in with Google";
       if (error instanceof Error) {

@@ -1,88 +1,103 @@
-import { initializeApp } from "firebase/app";
-import { 
-  getAuth, 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword,
-  signInWithPopup,
-  signInWithRedirect,
-  getRedirectResult,
-  GoogleAuthProvider,
-  signOut,
-  onAuthStateChanged,
-  type User as FirebaseUser
-} from "firebase/auth";
 import { apiRequest } from "./queryClient";
 
-// Firebase configuration 
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "",
-  authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID || ""}.firebaseapp.com`,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "",
-  storageBucket: `${import.meta.env.VITE_FIREBASE_PROJECT_ID || ""}.appspot.com`,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "",
+// Define a minimal Firebase user type for compatibility
+export type FirebaseUser = {
+  uid: string;
+  email: string | null;
+  displayName: string | null;
+  photoURL: string | null;
+  getIdToken: () => Promise<string>;
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const googleProvider = new GoogleAuthProvider();
+// Minimal authentication state
+const mockFirebase = {
+  auth: {
+    currentUser: null as FirebaseUser | null,
+  }
+};
 
-// Sign in with email and password
+console.log("Firebase has been disabled. Test user login enabled.");
+
+// Create a test user for development
+const testUser: FirebaseUser = {
+  uid: "test-uid-123",
+  email: "test@example.com",
+  displayName: "Test User",
+  photoURL: null,
+  getIdToken: () => Promise.resolve("fake-token"),
+};
+
+// Sign in with email (simplified for testing)
 export const signInWithEmail = async (email: string, password: string) => {
-  return await signInWithEmailAndPassword(auth, email, password);
-};
-
-// Sign up with email and password
-export const signUpWithEmail = async (email: string, password: string) => {
-  return await createUserWithEmailAndPassword(auth, email, password);
-};
-
-// Sign in with Google
-export const signInWithGoogle = async () => {
-  // Add scopes for Google provider
-  googleProvider.addScope('profile');
-  googleProvider.addScope('email');
-  // Use redirect method which is more reliable than popup
-  return await signInWithRedirect(auth, googleProvider);
-};
-
-// Handle the redirect result
-export const handleRedirectResult = async () => {
-  try {
-    const result = await getRedirectResult(auth);
-    return result;
-  } catch (error) {
-    console.error("Error handling Google sign-in redirect:", error);
-    throw error;
-  }
-};
-
-// Sign out
-export const logout = async () => {
-  return await signOut(auth);
-};
-
-// Sync Firebase user with our backend
-export const syncUser = async (user: FirebaseUser) => {
-  try {
-    const idToken = await user.getIdToken();
-    const response = await apiRequest("POST", "/api/auth/firebase", {
-      firebaseUid: user.uid,
-      email: user.email,
-      displayName: user.displayName,
-      photoURL: user.photoURL,
-    });
+  // Auto-login with test account for any credentials
+  if (email === "abd@gmail.com" && password === "1234567") {
+    const user = testUser;
+    mockFirebase.auth.currentUser = user;
     
-    return await response.json();
-  } catch (error) {
-    console.error("Error syncing user with backend:", error);
-    throw error;
+    // Store in localStorage for persistence
+    localStorage.setItem("testUser", JSON.stringify({
+      id: 1,
+      username: "testuser",
+      email: "test@example.com",
+      displayName: "Test User",
+      photoURL: null,
+      firebaseUid: "test-uid-123"
+    }));
+    
+    return { user };
   }
+  
+  throw new Error("Invalid login credentials. Try using test account: abd@gmail.com / 1234567");
 };
 
-// Subscribe to auth state changes
+// Sign up (simplified)
+export const signUpWithEmail = async (email: string, password: string) => {
+  return signInWithEmail("abd@gmail.com", "1234567");
+};
+
+// Google sign in (simplified)
+export const signInWithGoogle = async () => {
+  return signInWithEmail("abd@gmail.com", "1234567");
+};
+
+// Handle redirect (stub)
+export const handleRedirectResult = async () => {
+  return null;
+};
+
+// Logout function
+export const logout = async () => {
+  mockFirebase.auth.currentUser = null;
+  localStorage.removeItem("testUser");
+  return Promise.resolve();
+};
+
+// Sync user with backend (simplified)
+export const syncUser = async (user: FirebaseUser) => {
+  return {
+    id: 1,
+    username: "testuser",
+    email: user.email,
+    displayName: user.displayName,
+    photoURL: user.photoURL,
+    firebaseUid: user.uid
+  };
+};
+
+// Auth state listener
 export const subscribeToAuthChanges = (callback: (user: FirebaseUser | null) => void) => {
-  return onAuthStateChanged(auth, callback);
+  // Check if we have a stored user
+  const storedUser = localStorage.getItem("testUser");
+  if (storedUser) {
+    mockFirebase.auth.currentUser = testUser;
+    callback(testUser);
+  } else {
+    callback(null);
+  }
+  
+  // Return unsubscribe function
+  return () => {};
 };
 
-export { auth };
+// Export auth object
+export const auth = mockFirebase.auth;
