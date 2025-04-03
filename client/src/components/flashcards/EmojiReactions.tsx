@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { reactionToFeedback, processReview, getNextReviewDateText, getKnowledgeLevelText } from "@/lib/spacedRepetition";
 
@@ -27,32 +27,40 @@ export default function EmojiReactions({
   style,
   className,
 }: EmojiReactionsProps) {
-  const [reactions, setReactions] = useState<EmojiReaction[]>([
+  const initialReactions = [
     { emoji: "😊", label: "Got it!", count: 0, selected: false },
     { emoji: "🤔", label: "Not sure", count: 0, selected: false },
     { emoji: "😵", label: "Confused", count: 0, selected: false },
     { emoji: "🔄", label: "Review Again", count: 0, selected: false },
-  ]);
+  ];
   
+  const [reactions, setReactions] = useState<EmojiReaction[]>(initialReactions);
   const { toast } = useToast();
   
-  // Load existing reactions from localStorage
+  // Load existing reactions from localStorage (only once on mount)
   useEffect(() => {
-    const savedReactions = localStorage.getItem(`reactions-${questionId}`);
-    if (savedReactions) {
-      try {
-        const parsedReactions = JSON.parse(savedReactions);
-        setReactions(parsedReactions);
-      } catch (e) {
-        console.error("Failed to parse saved reactions", e);
+    const loadSavedReactions = () => {
+      const savedReactions = localStorage.getItem(`reactions-${questionId}`);
+      if (savedReactions) {
+        try {
+          const parsedReactions = JSON.parse(savedReactions);
+          setReactions(parsedReactions);
+        } catch (e) {
+          console.error("Failed to parse saved reactions", e);
+        }
       }
-    }
+    };
+    
+    loadSavedReactions();
   }, [questionId]);
   
   // Save reactions to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem(`reactions-${questionId}`, JSON.stringify(reactions));
-  }, [reactions, questionId]);
+    // Only save if we're actually changing something meaningful
+    if (reactions !== initialReactions) {
+      localStorage.setItem(`reactions-${questionId}`, JSON.stringify(reactions));
+    }
+  }, [reactions, questionId, initialReactions]);
   
   const handleReaction = (index: number) => {
     setReactions(prev => {
@@ -99,18 +107,39 @@ export default function EmojiReactions({
   };
   
   const getFeedbackMessage = (label: string): string => {
-    switch (label) {
-      case "Got it!":
-        return "Great! This card will be shown less frequently.";
-      case "Not sure":
-        return "This card will be shown again soon to help you learn.";
-      case "Confused":
-        return "Don't worry, you'll see this card more often to practice.";
-      case "Review Again":
-        return "We'll make sure to review this card in your next session.";
-      default:
-        return "Your feedback helps optimize your learning experience.";
-    }
+    // Create an array of possible messages for each label for more variety
+    const messages = {
+      "Got it!": [
+        "Excellent! You're mastering this concept. We'll space out future reviews.",
+        "Amazing job! Your brain is making strong connections. See you in a while!",
+        "You've got this down! We'll show it less often as you continue to rock it.",
+        "Awesome recall! Your knowledge is solidifying. This card will appear less frequently."
+      ],
+      "Not sure": [
+        "Getting there! We'll bring this back soon to strengthen your memory.",
+        "You're on the right track. A few more reviews will help cement this knowledge.",
+        "Almost there! We'll schedule this again soon to help build your confidence.",
+        "No problem! Learning is a process. We'll revisit this at the perfect time for retention."
+      ],
+      "Confused": [
+        "That's okay! Complex topics take time. We'll review this more frequently.",
+        "No worries! Even Einstein struggled at first. We'll prioritize this for more practice.",
+        "Learning involves confusion - it means your brain is growing! We'll review this again soon.",
+        "This is part of the learning process. We'll make sure you see this more often."
+      ],
+      "Review Again": [
+        "Sure thing! We'll include this in your next review session.",
+        "Got it! Sometimes a card just needs another look. We'll bring it back soon.",
+        "Marked for priority review in your next session!",
+        "Good call! Extra reviews help build stronger neural pathways."
+      ]
+    };
+    
+    // Pick a random message from the appropriate category
+    const messageOptions = messages[label as keyof typeof messages] || ["Your feedback helps optimize your learning experience."];
+    const randomIndex = Math.floor(Math.random() * messageOptions.length);
+    
+    return messageOptions[randomIndex];
   };
   
   // Determine size classes
@@ -120,41 +149,119 @@ export default function EmojiReactions({
     lg: "text-3xl p-3",
   };
   
+  // Define colors for each reaction to make them more visually distinct
+  const reactionColors = {
+    "Got it!": {
+      bg: "rgba(198, 255, 0, 0.2)",
+      ring: "var(--color-neon-lime)",
+      hoverBg: "rgba(198, 255, 0, 0.3)",
+      countBg: "var(--color-neon-lime)",
+      countText: "black"
+    },
+    "Not sure": {
+      bg: "rgba(255, 160, 0, 0.2)",
+      ring: "var(--color-blazing-amber)",
+      hoverBg: "rgba(255, 160, 0, 0.3)",
+      countBg: "var(--color-blazing-amber)",
+      countText: "black"
+    },
+    "Confused": {
+      bg: "rgba(216, 27, 96, 0.2)",
+      ring: "var(--color-razor-crimson)",
+      hoverBg: "rgba(216, 27, 96, 0.3)",
+      countBg: "var(--color-razor-crimson)",
+      countText: "white"
+    },
+    "Review Again": {
+      bg: "rgba(69, 90, 100, 0.2)",
+      ring: "var(--color-steel-graphite)",
+      hoverBg: "rgba(69, 90, 100, 0.3)",
+      countBg: "var(--color-steel-graphite)",
+      countText: "white"
+    }
+  };
+
   return (
-    <div 
-      className={`flex items-center justify-center gap-2 ${className || ""}`} 
+    <motion.div 
+      className={`flex items-center justify-center gap-3 ${className || ""}`} 
       style={style}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ 
+        duration: 0.4, 
+        staggerChildren: 0.08,
+        delayChildren: 0.1
+      }}
     >
-      {reactions.map((reaction, index) => (
-        <div key={index} className="flex flex-col items-center">
-          <motion.button
-            className={`rounded-full ${sizeClasses[size]} ${
-              reaction.selected 
-                ? "bg-white bg-opacity-20 ring-2 ring-white ring-opacity-50" 
-                : "bg-white bg-opacity-10 hover:bg-opacity-15"
-            } transition-all duration-200`}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => handleReaction(index)}
+      {reactions.map((reaction, index) => {
+        const colors = reactionColors[reaction.label as keyof typeof reactionColors];
+        
+        return (
+          <motion.div 
+            key={index} 
+            className="flex flex-col items-center"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            whileHover={{ y: -3 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
           >
-            <span role="img" aria-label={reaction.label}>
-              {reaction.emoji}
-            </span>
-            
-            {reaction.count > 0 && (
-              <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                {reaction.count}
+            <motion.button
+              className={`relative rounded-full ${sizeClasses[size]} transition-all duration-300`}
+              style={{ 
+                backgroundColor: reaction.selected ? colors.bg : "rgba(255, 255, 255, 0.1)",
+                boxShadow: reaction.selected ? `0 0 12px ${colors.ring}` : "none",
+                border: reaction.selected ? `2px solid ${colors.ring}` : "2px solid transparent"
+              }}
+              whileHover={{ 
+                scale: 1.15, 
+                backgroundColor: reaction.selected ? colors.bg : colors.hoverBg
+              }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => handleReaction(index)}
+            >
+              <span 
+                role="img" 
+                aria-label={reaction.label}
+                className={`text-shadow transition-transform duration-300 ${reaction.selected ? "scale-110" : ""}`}
+                style={{ filter: reaction.selected ? "drop-shadow(0 0 2px white)" : "none" }}
+              >
+                {reaction.emoji}
               </span>
+              
+              <AnimatePresence>
+                {reaction.count > 0 && (
+                  <motion.span 
+                    className="absolute -top-2 -right-2 text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-md"
+                    style={{ 
+                      backgroundColor: colors.countBg,
+                      color: colors.countText
+                    }}
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0, opacity: 0 }}
+                  >
+                    {reaction.count}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </motion.button>
+            
+            {showLabels && (
+              <motion.span 
+                className="text-xs mt-2 font-medium"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.1 }}
+                style={{ 
+                  color: reaction.selected ? colors.ring : "rgba(255, 255, 255, 0.8)" 
+                }}
+              >
+                {reaction.label}
+              </motion.span>
             )}
-          </motion.button>
-          
-          {showLabels && (
-            <span className="text-xs mt-1 text-white text-opacity-80">
-              {reaction.label}
-            </span>
-          )}
-        </div>
-      ))}
-    </div>
+          </motion.div>
+        );
+      })}
+    </motion.div>
   );
 }
