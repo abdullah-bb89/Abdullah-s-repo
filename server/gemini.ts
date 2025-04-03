@@ -1,14 +1,18 @@
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
 
 // Access API key from environment variables
-const apiKey = process.env.GEMINI_API_KEY || '';
+const apiKey = process.env.GEMINI_API_KEY;
+
+console.log('GEMINI_API_KEY available:', !!apiKey); // Debug - don't log actual key
 
 if (!apiKey) {
-  throw new Error('GEMINI_API_KEY environment variable is not set');
+  console.error('GEMINI_API_KEY environment variable is not set or empty');
+  // Use a fallback approach instead of throwing an error
+  console.warn('Using fallback for API functionality - some features may be limited');
 }
 
-// Initialize the Gemini API client
-const genAI = new GoogleGenerativeAI(apiKey);
+// Initialize the Gemini API client with key or empty string (will fail gracefully later)
+const genAI = new GoogleGenerativeAI(apiKey || '');
 
 // Default safety settings
 const safetySettings = [
@@ -32,6 +36,11 @@ const safetySettings = [
 
 // Function to generate knowledge
 export async function generateKnowledgeWithGemini(question: string): Promise<string> {
+  // If no API key is available, return a message about it
+  if (!apiKey) {
+    return "To use AI-generated content, please set up your GEMINI_API_KEY in the environment variables. This application requires a valid Google Gemini AI API key to generate knowledge.";
+  }
+
   try {
     // For text-only input, use the gemini-1.5-pro model (updated from gemini-pro)
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
@@ -55,6 +64,18 @@ export async function generateKnowledgeWithGemini(question: string): Promise<str
     return response.text();
   } catch (error) {
     console.error("Gemini API error:", error);
+    
+    // Return a more user-friendly error message
+    if (error instanceof Error) {
+      if (error.message.includes("API key")) {
+        return "Error: Invalid or expired Gemini API key. Please update your API key in the environment settings.";
+      }
+      
+      if (error.message.includes("quota")) {
+        return "Error: Gemini API quota exceeded. Please try again later or upgrade your API plan.";
+      }
+    }
+    
     throw error;
   }
 }
@@ -77,6 +98,37 @@ export async function generateFlashcardsWithGemini(text: string): Promise<{
     defaultCardStyle?: string
   }
 }> {
+  // If no API key is available, return sample flashcards with a notice
+  if (!apiKey) {
+    return {
+      flashcards: [
+        {
+          question: "API Key Required",
+          answer: "To generate flashcards with AI, please set up your GEMINI_API_KEY in the environment variables.",
+          backgroundColor: "#f8e5e5",
+          textColor: "#c62828",
+          font: "sans-serif",
+          difficulty: "medium",
+          tags: ["Setup", "Configuration"]
+        },
+        {
+          question: "How to get a Gemini API Key?",
+          answer: "Visit the Google AI Studio website, create an account, and generate an API key for the Gemini model.",
+          backgroundColor: "#e5f6ff",
+          textColor: "#0277bd",
+          font: "sans-serif",
+          difficulty: "easy",
+          tags: ["Setup", "Google"]
+        }
+      ],
+      setInfo: {
+        title: "API Configuration Required",
+        description: "Information about setting up the required API key for this application",
+        category: "Configuration"
+      }
+    };
+  }
+
   try {
     // For text-only input, use the gemini-1.5-pro model
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
@@ -179,6 +231,52 @@ export async function generateFlashcardsWithGemini(text: string): Promise<{
     }
   } catch (error) {
     console.error("Gemini API error:", error);
+    
+    // For specific errors, provide informative flashcards rather than failing
+    if (error instanceof Error) {
+      if (error.message.includes("API key") || error.message.includes("invalid key")) {
+        return {
+          flashcards: [
+            {
+              question: "API Key Error",
+              answer: "Your Gemini API key appears to be invalid or expired. Please update it in the environment settings.",
+              backgroundColor: "#f8e5e5",
+              textColor: "#c62828",
+              font: "sans-serif",
+              difficulty: "medium", 
+              tags: ["Error", "Configuration"]
+            }
+          ],
+          setInfo: {
+            title: "API Key Issue",
+            description: "There's a problem with your Gemini API key",
+            category: "Errors"
+          }
+        };
+      }
+      
+      if (error.message.includes("quota")) {
+        return {
+          flashcards: [
+            {
+              question: "API Quota Exceeded",
+              answer: "You've reached your quota limit for the Gemini API. Please try again later or upgrade your plan.",
+              backgroundColor: "#fff8e1",
+              textColor: "#ff8f00",
+              font: "sans-serif",
+              difficulty: "medium",
+              tags: ["Error", "Quota"]
+            }
+          ],
+          setInfo: {
+            title: "API Usage Limit",
+            description: "Information about your Gemini API usage limitations",
+            category: "Errors"
+          }
+        };
+      }
+    }
+    
     throw error;
   }
 }
