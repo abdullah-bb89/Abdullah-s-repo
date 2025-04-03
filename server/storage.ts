@@ -1,7 +1,8 @@
 import { 
   users, type User, type InsertUser,
   flashcards, type Flashcard, type InsertFlashcard,
-  flashcardSets, type FlashcardSet, type InsertFlashcardSet 
+  flashcardSets, type FlashcardSet, type InsertFlashcardSet,
+  quizScores, type QuizScore, type InsertQuizScore
 } from "@shared/schema";
 
 // Interface for storage operations
@@ -22,23 +23,31 @@ export interface IStorage {
   getFlashcardSetsByUserId(userId: number): Promise<FlashcardSet[]>;
   getFlashcardSet(id: number): Promise<FlashcardSet | undefined>;
   deleteFlashcardSet(id: number): Promise<void>;
+  
+  // Quiz score operations
+  createQuizScore(score: InsertQuizScore): Promise<QuizScore>;
+  getQuizScoresByUserId(userId: number): Promise<QuizScore[]>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
   private flashcards: Map<number, Flashcard>;
   private flashcardSets: Map<number, FlashcardSet>;
+  private quizScores: Map<number, QuizScore>;
   private currentUserId: number;
   private currentFlashcardId: number;
   private currentFlashcardSetId: number;
+  private currentQuizScoreId: number;
 
   constructor() {
     this.users = new Map();
     this.flashcards = new Map();
     this.flashcardSets = new Map();
+    this.quizScores = new Map();
     this.currentUserId = 1;
     this.currentFlashcardId = 1;
     this.currentFlashcardSetId = 1;
+    this.currentQuizScoreId = 1;
     
     // Create a default test user to fix the "User not found" issue
     const testUser: User = {
@@ -157,6 +166,29 @@ export class MemStorage implements IStorage {
     Array.from(this.flashcards.entries())
       .filter(([_, flashcard]) => flashcard.setId === id)
       .forEach(([flashcardId, _]) => this.flashcards.delete(flashcardId));
+  }
+
+  // Quiz score operations
+  async createQuizScore(insertQuizScore: InsertQuizScore): Promise<QuizScore> {
+    const id = this.currentQuizScoreId++;
+    const now = new Date();
+    
+    // Ensure null values for nullable fields
+    const quizScore: QuizScore = { 
+      ...insertQuizScore, 
+      id, 
+      createdAt: now,
+      quizContent: insertQuizScore.quizContent ?? null
+    };
+    
+    this.quizScores.set(id, quizScore);
+    return quizScore;
+  }
+
+  async getQuizScoresByUserId(userId: number): Promise<QuizScore[]> {
+    return Array.from(this.quizScores.values())
+      .filter((score) => score.userId === userId)
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()); // Sort by newest first
   }
 }
 

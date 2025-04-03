@@ -5,10 +5,12 @@ import { z } from "zod";
 import { 
   insertUserSchema, 
   insertFlashcardSchema, 
-  insertFlashcardSetSchema, 
+  insertFlashcardSetSchema,
+  insertQuizScoreSchema, 
   flashcardGenerationSchema,
   type InsertFlashcardSet,
-  type InsertFlashcard
+  type InsertFlashcard,
+  type InsertQuizScore
 } from "@shared/schema";
 import { generateKnowledgeWithGemini, generateFlashcardsWithGemini } from "./gemini";
 
@@ -325,6 +327,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.deleteFlashcardSet(setId);
       
       res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ message: "Server error" });
+    }
+  });
+
+  // Quiz score routes
+  app.post("/api/quiz-scores", async (req: Request, res: Response) => {
+    try {
+      const quizScoreData = insertQuizScoreSchema.parse(req.body);
+      
+      // Check if user exists
+      const user = await storage.getUser(quizScoreData.userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      const quizScore = await storage.createQuizScore(quizScoreData);
+      
+      res.status(201).json(quizScore);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid input", errors: error.errors });
+      }
+      res.status(500).json({ message: "Server error" });
+    }
+  });
+  
+  app.get("/api/users/:userId/quiz-scores", async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+      }
+      
+      const quizScores = await storage.getQuizScoresByUserId(userId);
+      
+      res.status(200).json(quizScores);
     } catch (error) {
       res.status(500).json({ message: "Server error" });
     }

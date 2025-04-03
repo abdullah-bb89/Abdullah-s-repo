@@ -49,7 +49,7 @@ export default function Header() {
               }`}
             >
               <BookMarked className="h-5 w-5 mr-1" />
-              Saved
+              Quiz Scores
             </Link>
             <UserMenu />
           </div>

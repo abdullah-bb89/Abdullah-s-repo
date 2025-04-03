@@ -25,6 +25,17 @@ export const flashcards = pgTable("flashcards", {
   tags: text("tags").array(),
 });
 
+export const quizScores = pgTable("quiz_scores", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  topic: text("topic").notNull(),
+  score: integer("score").notNull(),
+  totalQuestions: integer("total_questions").notNull(),
+  percentageScore: integer("percentage_score").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  quizContent: text("quiz_content"), // Stores the original question that generated the quiz
+});
+
 export const flashcardSets = pgTable("flashcard_sets", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
@@ -53,6 +64,11 @@ export const insertFlashcardSetSchema = createInsertSchema(flashcardSets).omit({
   createdAt: true,
 });
 
+export const insertQuizScoreSchema = createInsertSchema(quizScores).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -62,6 +78,9 @@ export type Flashcard = typeof flashcards.$inferSelect;
 
 export type InsertFlashcardSet = z.infer<typeof insertFlashcardSetSchema>;
 export type FlashcardSet = typeof flashcardSets.$inferSelect;
+
+export type InsertQuizScore = z.infer<typeof insertQuizScoreSchema>;
+export type QuizScore = typeof quizScores.$inferSelect;
 
 // Response schema for AI flashcard generation
 export const flashcardGenerationSchema = z.object({

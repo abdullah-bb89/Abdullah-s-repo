@@ -154,9 +154,29 @@ export default function HomePage() {
     }
   };
   
-  const handleQuizComplete = (score: number, total: number) => {
+  const handleQuizComplete = async (score: number, total: number) => {
     setQuizCompleted(true);
     setQuizScore({ score, total });
+    
+    // Save the quiz score to the database
+    try {
+      if (user?.id) {
+        const percentageScore = Math.round((score / total) * 100);
+        await apiRequest("POST", "/api/quiz-scores", {
+          userId: user.id,
+          topic: currentQuestion,
+          score,
+          totalQuestions: total,
+          percentageScore,
+          quizContent: knowledgeResult
+        });
+        
+        // Invalidate the query to refresh the quiz scores
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${user.id}/quiz-scores`] });
+      }
+    } catch (error) {
+      console.error("Failed to save quiz score:", error);
+    }
     
     toast({
       title: "Quiz completed!",
