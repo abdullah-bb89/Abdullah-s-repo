@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import { logout } from "@/lib/firebase";
 import { logoutLocalUser } from "@/lib/localAuth";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -30,6 +29,17 @@ export default function UserMenu() {
 
   const handleSignOut = async () => {
     try {
+      // For Google simulated users, remove from localStorage
+      if (localStorage.getItem("localUser")) {
+        localStorage.removeItem("localUser");
+        toast({
+          title: "Signed out successfully",
+          description: "You have been signed out.",
+        });
+        window.location.href = "/auth";
+        return;
+      }
+      
       // Check if this is a test user
       const testUserJson = localStorage.getItem("testUser");
       if (testUserJson) {
@@ -45,17 +55,6 @@ export default function UserMenu() {
         logoutLocalUser();
         window.location.href = "/auth"; // Force reload to update auth state
         return;
-      }
-      
-      // Regular Firebase logout
-      try {
-        await logout();
-        // Firebase auth state will be handled by the AuthContext
-      } catch (firebaseError) {
-        console.error("Firebase logout error:", firebaseError);
-        // Even if Firebase logout fails, try to clean up local state
-        logoutLocalUser();
-        window.location.href = "/auth";
       }
     } catch (error) {
       let message = "Failed to sign out";

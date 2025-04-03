@@ -1,60 +1,55 @@
-import { useState, useEffect } from "react";
-import { signInWithGoogle, handleRedirectResult } from "@/lib/firebase";
+import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 
 export default function GoogleSignIn() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  
-  // Check for redirect result when component mounts
-  useEffect(() => {
-    const checkRedirectResult = async () => {
-      try {
-        const result = await handleRedirectResult();
-        if (result) {
-          // The redirect was successful, but Firebase will handle the auth state change
-          // through the AuthContext, so we don't need to do anything here
-          console.log("Google signin redirect completed successfully");
-        }
-      } catch (error) {
-        let message = "Failed to complete Google sign-in";
-        if (error instanceof Error) {
-          message = error.message;
-        }
-        toast({
-          variant: "destructive",
-          title: "Authentication Error",
-          description: message,
-        });
-      }
-    };
-    
-    checkRedirectResult();
-  }, [toast]);
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
+    
     try {
       toast({
-        title: "Redirecting to Google",
-        description: "You'll be redirected to Google's authentication page.",
+        title: "Processing Google Sign-In",
+        description: "Signing you in with simulated Google authentication...",
       });
       
-      await signInWithGoogle();
-      // User will be redirected to Google's login page
-      // After successful login, they'll be redirected back to our app
-      // and the redirect result will be handled in the useEffect above
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Create a simulated Google user
+      const randomId = Math.floor(Math.random() * 100000);
+      const simulatedUser = {
+        id: randomId,
+        username: `google_user_${randomId}`,
+        email: `user${randomId}@gmail.com`,
+        displayName: "Google User",
+        photoURL: "https://api.dicebear.com/7.x/shapes/svg?seed=" + randomId,
+      };
+      
+      // Store in localStorage (similar to our local auth system)
+      localStorage.setItem('localUser', JSON.stringify(simulatedUser));
+      
+      toast({
+        title: "Google Sign-In Successful",
+        description: "Welcome to FlashGenius!",
+      });
+      
+      // Redirect to home page
+      window.location.href = "/";
     } catch (error) {
       let message = "Failed to sign in with Google";
       if (error instanceof Error) {
         message = error.message;
       }
+      
       toast({
         variant: "destructive",
         title: "Authentication Error",
         description: message,
       });
+    } finally {
       setIsLoading(false);
     }
   };
