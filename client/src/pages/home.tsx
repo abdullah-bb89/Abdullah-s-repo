@@ -414,6 +414,18 @@ export default function HomePage() {
                             <Brain className="mr-2 h-4 w-4" />
                             Try Again
                           </Button>
+                          <Button 
+                            onClick={() => window.location.href = "/"}
+                            className="px-5 py-3 rounded-xl transition-all duration-200 hover:scale-105"
+                            style={{ 
+                              backgroundColor: 'var(--color-razor-crimson)',
+                              color: 'white',
+                              fontWeight: 'bold'
+                            }}
+                          >
+                            <span className="mr-2">✓</span>
+                            Finish
+                          </Button>
                         </div>
                       </div>
                     </CardContent>

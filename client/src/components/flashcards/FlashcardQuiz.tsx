@@ -223,17 +223,29 @@ export default function FlashcardQuiz({ flashcards, onQuizComplete, onCancel }: 
               </div>
             </div>
             
-            <div className="mt-8">
+            <div className="mt-8 flex justify-center gap-4">
               <Button 
                 onClick={onCancel} 
+                className="px-6 py-5 font-medium text-base rounded-lg transition-all duration-200 hover:scale-105"
+                style={{ 
+                  backgroundColor: 'rgba(255,255,255,0.15)',
+                  color: 'white'
+                }}
+              >
+                <BookOpen className="mr-2 h-5 w-5" />
+                Return to Knowledge
+              </Button>
+              
+              <Button 
+                onClick={() => window.location.href = "/"}
                 className="px-6 py-5 font-medium text-base rounded-lg transition-all duration-200 hover:scale-105"
                 style={{ 
                   backgroundColor: 'var(--color-blazing-amber)',
                   color: 'black'
                 }}
               >
-                <BookOpen className="mr-2 h-5 w-5" />
-                Return to Knowledge
+                <span className="mr-2">✓</span>
+                Finish
               </Button>
             </div>
           </div>
