@@ -6,6 +6,7 @@ import { Check, X, Trophy, ArrowRight, ThumbsUp, ThumbsDown, BrainCircuit, BookO
 import { Badge } from "@/components/ui/badge";
 import { type FlashcardGeneration } from "@shared/schema";
 import EmojiReactions from "./EmojiReactions";
+import { useLocation } from "wouter";
 
 interface FlashcardQuizProps {
   flashcards: FlashcardGeneration;
@@ -30,6 +31,7 @@ export default function FlashcardQuiz({ flashcards, onQuizComplete, onCancel }: 
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [, setLocation] = useLocation();
   
   // Convert flashcards to quiz questions on component mount
   useEffect(() => {
@@ -79,6 +81,9 @@ export default function FlashcardQuiz({ flashcards, onQuizComplete, onCancel }: 
   };
 
   const handleNextQuestion = () => {
+    // The score for the current question was already updated in handleOptionSelect
+    // So we don't need to update it again here
+    
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(prevIndex => prevIndex + 1);
       setSelectedOption(null);
@@ -86,7 +91,9 @@ export default function FlashcardQuiz({ flashcards, onQuizComplete, onCancel }: 
     } else {
       // Quiz completed
       setIsCompleted(true);
-      onQuizComplete(score + (selectedOption === questions[currentQuestionIndex].correctAnswer ? 1 : 0), questions.length);
+      
+      // Use the current score since it was already updated in handleOptionSelect
+      onQuizComplete(score, questions.length);
     }
   };
 
@@ -99,8 +106,8 @@ export default function FlashcardQuiz({ flashcards, onQuizComplete, onCancel }: 
   }
 
   if (isCompleted) {
-    const finalScore = score + (selectedOption === questions[currentQuestionIndex]?.correctAnswer ? 1 : 0);
-    const percentage = Math.round((finalScore / questions.length) * 100);
+    // Score is already updated in handleOptionSelect, no need to calculate it again
+    const percentage = Math.round((score / questions.length) * 100);
     
     // Get appropriate feedback based on score
     const getFeedback = () => {
@@ -158,7 +165,7 @@ export default function FlashcardQuiz({ flashcards, onQuizComplete, onCancel }: 
               Quiz Completed!
             </h2>
             <p className="text-xl text-white mb-4">
-              You scored <span className="font-bold">{finalScore}</span> out of <span className="font-bold">{questions.length}</span>
+              You scored <span className="font-bold">{score}</span> out of <span className="font-bold">{questions.length}</span>
             </p>
             
             <div className="w-40 h-40 mx-auto mb-6 relative">
@@ -237,7 +244,7 @@ export default function FlashcardQuiz({ flashcards, onQuizComplete, onCancel }: 
               </Button>
               
               <Button 
-                onClick={() => window.location.href = "/"}
+                onClick={() => setLocation("/")}
                 className="px-6 py-5 font-medium text-base rounded-lg transition-all duration-200 hover:scale-105"
                 style={{ 
                   backgroundColor: 'var(--color-blazing-amber)',
