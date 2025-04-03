@@ -36,30 +36,60 @@ export default function KnowledgeResult({ answer, onFlashcardsCreated }: Knowled
   };
 
   return (
-    <Card className="mt-6">
-      <CardContent className="pt-6">
-        <h2 className="text-lg font-medium text-gray-900">Here's what I found</h2>
+    <Card className="mt-8 rounded-xl shadow-xl overflow-hidden border-0"
+      style={{ 
+        background: 'linear-gradient(145deg, rgba(69, 90, 100, 0.9) 0%, rgba(38, 50, 56, 0.9) 100%)',
+        backdropFilter: 'blur(10px)',
+        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)'
+      }}
+    >
+      <div className="h-2" style={{ backgroundColor: 'var(--color-blazing-amber)' }}></div>
+      <CardContent className="p-6">
+        <div className="flex items-center mb-4">
+          <div className="w-8 h-8 rounded-full flex items-center justify-center mr-3"
+            style={{ backgroundColor: 'var(--color-blazing-amber)' }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="black">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-bold" style={{ color: 'white' }}>Knowledge Generated</h2>
+        </div>
+        
         <div 
-          className="mt-3 prose prose-sm text-gray-700"
+          className="mt-4 px-4 py-5 rounded-lg prose prose-invert max-w-none"
+          style={{ 
+            backgroundColor: 'rgba(0,0,0,0.2)',
+            color: 'white',
+            fontSize: '1.05rem',
+            lineHeight: '1.6'
+          }}
           dangerouslySetInnerHTML={{ __html: answer }}
         />
-        <div className="mt-5">
+        
+        <div className="mt-6 flex justify-end">
           <Button
             onClick={handleCreateFlashcards}
-            className="inline-flex items-center bg-amber-500 hover:bg-amber-600"
+            className="rounded-lg h-12 px-6 transition-all duration-200 hover:scale-[1.02] flex items-center"
+            style={{ 
+              backgroundColor: 'var(--color-blazing-amber)',
+              color: 'black',
+              fontWeight: '600',
+              boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+            }}
             disabled={isLoading}
           >
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Creating...
+                Creating Quiz...
               </>
             ) : (
               <>
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
-                Create Flashcards
+                Create Quiz from Knowledge
               </>
             )}
           </Button>

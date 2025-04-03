@@ -5,11 +5,17 @@
 @layer base {
   :root {
     /* Custom color palette based on user preferences */
+    --color-electric-midnight: #1A237E;
     --color-midnight-blue: #1A237E;
     --color-steel-graphite: #455A64;
     --color-razor-crimson: #D81B60;
     --color-blazing-amber: #FFA000;
     --color-neon-lime: #C6FF00;
+    
+    /* Gradient backgrounds */
+    --gradient-cosmic: linear-gradient(135deg, #1A237E 0%, #3949AB 100%);
+    --gradient-sunset: linear-gradient(135deg, #D81B60 0%, #FFA000 100%);
+    --gradient-matrix: linear-gradient(135deg, #455A64 0%, #1A237E 100%);
   }
 
   * {
@@ -17,43 +23,188 @@
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
-    background-color: var(--color-midnight-blue);
+    @apply font-sans antialiased;
+    background: var(--gradient-cosmic);
+    color: white;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  
+  /* Background stars */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background-image: 
+      radial-gradient(circle at 25% 15%, rgba(255, 255, 255, 0.3) 1px, transparent 1px),
+      radial-gradient(circle at 75% 35%, rgba(255, 255, 255, 0.3) 1px, transparent 1px),
+      radial-gradient(circle at 85% 65%, rgba(255, 255, 255, 0.3) 1px, transparent 1px),
+      radial-gradient(circle at 15% 75%, rgba(255, 255, 255, 0.3) 1px, transparent 1px),
+      radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.3) 1px, transparent 1px),
+      radial-gradient(circle at 65% 85%, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+    background-size: 100px 100px;
   }
   
   /* Custom button styles */
   .btn-primary {
-    @apply bg-[#D81B60] hover:bg-[#FFA000] text-white font-bold py-2 px-4 rounded;
-    transition: all 0.3s ease;
+    @apply bg-[var(--color-razor-crimson)] hover:bg-[var(--color-blazing-amber)] text-white font-bold py-2 px-4 rounded-lg;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+  
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 14px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.1);
   }
   
   .btn-secondary {
-    @apply bg-[#455A64] hover:bg-[#C6FF00] hover:text-black text-white font-bold py-2 px-4 rounded;
-    transition: all 0.3s ease;
+    @apply bg-[var(--color-steel-graphite)] hover:bg-[var(--color-neon-lime)] hover:text-black text-white font-bold py-2 px-4 rounded-lg;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+  
+  .btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 14px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.1);
   }
   
   /* Custom input field styles */
   .input-custom {
-    @apply bg-[#455A64] border-[#FFA000] text-white placeholder-gray-300;
+    @apply bg-[rgba(255,255,255,0.1)] border-[var(--color-blazing-amber)] text-white placeholder-gray-300 rounded-lg;
+    backdrop-filter: blur(4px);
   }
-}
-
-/* Flashcard 3D flip effect */
-.perspective-1000 {
-  perspective: 1000px;
-}
-.transform-style-preserve-3d {
-  transform-style: preserve-3d;
-}
-.backface-hidden {
-  backface-visibility: hidden;
-}
-.rotate-y-180 {
-  transform: rotateY(180deg);
-}
-.transition-transform {
-  transition: transform 0.6s;
-}
-.duration-600 {
-  transition-duration: 600ms;
+  
+  /* Glass card effect */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Animation classes */
+  .animate-fadeIn {
+    animation: fadeIn 0.8s ease-in-out forwards;
+  }
+  
+  .animate-slideUp {
+    animation: slideUp 0.8s ease-out forwards;
+  }
+  
+  .animate-slideIn {
+    animation: slideIn 0.8s ease-out forwards;
+  }
+  
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .animate-float-slow {
+    animation: float 8s ease-in-out infinite;
+  }
+  
+  .animate-pulse-soft {
+    animation: pulseSoft 3s ease-in-out infinite;
+  }
+  
+  /* Animation delay utility classes */
+  .delay-100 { animation-delay: 100ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
+  .delay-500 { animation-delay: 500ms; }
+  
+  /* Keyframes */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes slideUp {
+    from { 
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to { 
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes slideIn {
+    from { 
+      opacity: 0;
+      transform: translateX(30px);
+    }
+    to { 
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes float {
+    0% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+  
+  @keyframes pulseSoft {
+    0% {
+      opacity: 0.8;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+    100% {
+      opacity: 0.8;
+      transform: scale(1);
+    }
+  }
+  
+  /* Quiz styling */
+  .quiz-container {
+    @apply rounded-xl overflow-hidden shadow-2xl;
+    background: rgba(26, 35, 126, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .quiz-option {
+    @apply relative w-full p-4 rounded-lg my-2 cursor-pointer transition-all duration-200;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid transparent;
+  }
+  
+  .quiz-option:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateX(5px);
+  }
+  
+  .quiz-option.selected {
+    border-color: var(--color-blazing-amber);
+    background: rgba(255, 160, 0, 0.1);
+  }
+  
+  .quiz-option.correct {
+    border-color: #4CAF50;
+    background: rgba(76, 175, 80, 0.1);
+  }
+  
+  .quiz-option.incorrect {
+    border-color: #F44336;
+    background: rgba(244, 67, 54, 0.1);
+  }
 }

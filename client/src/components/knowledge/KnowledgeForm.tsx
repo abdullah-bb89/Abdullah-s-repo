@@ -141,33 +141,59 @@ export default function KnowledgeForm({ onKnowledgeGenerated, onQuizRequested }:
   };
 
   return (
-    <Card>
-      <CardContent className="pt-6">
+    <Card className="rounded-xl shadow-lg p-1 border-0"
+      style={{ 
+        background: 'linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
+        backdropFilter: 'blur(5px)'
+      }}
+    >
+      <CardContent className="pt-8 pb-6 px-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
+            <div className="mb-6">
+              <h3 className="text-xl font-semibold mb-2" style={{ color: 'white' }}>
+                What would you like to learn about?
+              </h3>
+              <p className="text-sm opacity-80" style={{ color: 'var(--color-blazing-amber)' }}>
+                Ask any question or enter a topic to explore and test your knowledge
+              </p>
+            </div>
+            
             <FormField
               control={form.control}
               name="question"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Your question</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="What's the deal with black holes?"
-                      className="resize-none"
+                      placeholder="e.g., How do black holes work? or The history of Ancient Rome"
+                      className="resize-none text-lg p-4 rounded-lg"
                       rows={3}
                       {...field}
+                      style={{ 
+                        backgroundColor: 'rgba(255,255,255,0.1)', 
+                        borderColor: 'var(--color-blazing-amber)',
+                        borderWidth: '2px',
+                        color: 'white',
+                        boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)'
+                      }}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-sm mt-2" style={{ color: 'var(--color-neon-lime)' }} />
                 </FormItem>
               )}
             />
-            <div className="mt-4 flex justify-end space-x-3">
+            
+            <div className="mt-6 flex flex-col sm:flex-row sm:justify-end gap-3">
               <Button
                 type="button"
-                variant="outline"
+                className="rounded-lg h-12 transition-all duration-200 hover:scale-[1.02] order-2 sm:order-1"
                 disabled={isQuizLoading || isLoading}
+                style={{ 
+                  backgroundColor: 'var(--color-razor-crimson)',
+                  color: 'white',
+                  boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+                }}
                 onClick={(e) => {
                   e.preventDefault();
                   handleTakeQuiz();
@@ -175,29 +201,37 @@ export default function KnowledgeForm({ onKnowledgeGenerated, onQuizRequested }:
               >
                 {isQuizLoading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                     Creating quiz...
                   </>
                 ) : (
                   <>
-                    <PenTool className="mr-2 h-4 w-4" />
-                    Take a Quiz
+                    <PenTool className="mr-2 h-5 w-5" />
+                    Take a Quiz Directly
                   </>
                 )}
               </Button>
+              
               <Button
                 type="submit"
+                className="rounded-lg h-12 transition-all duration-200 hover:scale-[1.02] order-1 sm:order-2"
                 disabled={isLoading || isQuizLoading}
+                style={{ 
+                  backgroundColor: 'var(--color-blazing-amber)',
+                  color: 'black',
+                  fontWeight: '600',
+                  boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+                }}
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Generating...
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    Generating Knowledge...
                   </>
                 ) : (
                   <>
-                    <BookOpen className="mr-2 h-4 w-4" />
-                    Generate
+                    <BookOpen className="mr-2 h-5 w-5" />
+                    Generate Knowledge
                   </>
                 )}
               </Button>

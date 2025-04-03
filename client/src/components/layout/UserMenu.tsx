@@ -74,45 +74,60 @@ export default function UserMenu() {
   return (
     <div className="relative" ref={menuRef}>
       <button
-        className="bg-primary-100 flex text-sm rounded-full focus:outline-none"
+        className="flex text-sm rounded-full focus:outline-none transition-transform duration-200 hover:scale-105 ring-2 ring-opacity-50 ring-amber-500"
+        style={{ 
+          backgroundColor: 'rgba(255, 255, 255, 0.1)'
+        }}
         onClick={toggleMenu}
       >
         <span className="sr-only">Open user menu</span>
         {user.photoURL ? (
           <img
-            className="h-8 w-8 rounded-full"
+            className="h-9 w-9 rounded-full border-2"
+            style={{ borderColor: 'var(--color-razor-crimson)' }}
             src={user.photoURL}
             alt={user.displayName || "User avatar"}
           />
         ) : (
-          <div className="h-8 w-8 rounded-full flex items-center justify-center bg-primary-100 text-primary-600">
-            <span>{initials}</span>
+          <div 
+            className="h-9 w-9 rounded-full flex items-center justify-center"
+            style={{ backgroundColor: 'var(--color-razor-crimson)', color: 'white' }}
+          >
+            <span className="font-semibold">{initials}</span>
           </div>
         )}
       </button>
 
       {isOpen && (
         <div
-          className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
+          className="origin-top-right absolute right-0 mt-2 w-56 rounded-xl shadow-xl overflow-hidden z-10 border border-opacity-20 backdrop-blur-md"
+          style={{ 
+            backgroundColor: 'rgba(38, 50, 56, 0.95)',
+            borderColor: 'rgba(255, 255, 255, 0.2)',
+            boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3)'
+          }}
           role="menu"
           aria-orientation="vertical"
           aria-labelledby="user-menu-button"
         >
-          <div className="block px-4 py-2 text-sm text-gray-700 border-b">
-            <div className="font-medium">
+          <div className="block px-5 py-3 text-sm border-b border-opacity-20"
+            style={{ borderColor: 'rgba(255, 255, 255, 0.1)', color: 'white' }}
+          >
+            <div className="font-bold text-base" style={{ color: 'var(--color-blazing-amber)' }}>
               {user.displayName || "User"}
             </div>
-            <div className="text-gray-500 truncate">
+            <div className="text-white text-opacity-70 truncate">
               {user.email || "No email"}
             </div>
           </div>
           <button
-            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            className="block w-full text-left px-5 py-3 text-sm text-white hover:bg-white hover:bg-opacity-10 transition-colors duration-150"
+            style={{ color: 'white' }}
             role="menuitem"
             onClick={handleSignOut}
           >
             <div className="flex items-center">
-              <LogOut className="h-4 w-4 mr-2" />
+              <LogOut className="h-4 w-4 mr-2" style={{ color: 'var(--color-razor-crimson)' }} />
               <span>Sign out</span>
             </div>
           </button>

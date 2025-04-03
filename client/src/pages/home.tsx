@@ -5,11 +5,10 @@ import { useToast } from "@/hooks/use-toast";
 import { type FlashcardGeneration } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
-import { Loader2, BookOpen, PenTool } from "lucide-react";
+import { Loader2, BookOpen, Brain, Lightbulb, PenTool } from "lucide-react";
 import Header from "@/components/layout/Header";
 import KnowledgeForm from "@/components/knowledge/KnowledgeForm";
 import KnowledgeResult from "@/components/knowledge/KnowledgeResult";
-import FlashCard from "@/components/flashcards/FlashCard";
 import FlashcardQuiz from "@/components/flashcards/FlashcardQuiz";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -185,85 +184,126 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col" 
+      style={{ 
+        backgroundColor: 'var(--color-midnight-blue)'
+      }}
+    >
       <Header />
       
       <main className="flex-grow">
-        <div className="py-6">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 className="text-2xl font-semibold text-gray-900">Knowledge Explorer</h1>
-            <p className="mt-1 text-sm text-gray-500">Ask anything and turn knowledge into flashcards</p>
+        <div className="py-10">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* Hero Section with Artwork */}
+            <div className="text-center mb-12 animate-fadeIn">
+              <div className="h-28 w-28 mx-auto relative mb-6">
+                <div className="absolute inset-0 rounded-full animate-pulse-soft"
+                  style={{ 
+                    background: 'radial-gradient(circle, rgba(216, 27, 96, 0.7) 0%, rgba(216, 27, 96, 0) 70%)'
+                  }}
+                ></div>
+                
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Brain className="h-16 w-16" style={{ color: 'var(--color-blazing-amber)' }} />
+                </div>
+              </div>
+              
+              <h1 className="text-5xl font-bold mb-4 animate-slideUp"
+                style={{ 
+                  color: 'white',
+                  textShadow: '0 0 15px rgba(255, 160, 0, 0.5)'
+                }}
+              >
+                <span style={{ color: 'var(--color-blazing-amber)' }}>Quiz</span>Genius
+              </h1>
+              
+              <div className="max-w-2xl mx-auto">
+                <p className="text-xl text-white text-opacity-90 mb-8 animate-slideUp delay-100">
+                  Learn anything. Test your knowledge. See how much you've mastered.
+                </p>
+                
+                <div className="flex justify-center gap-6 mb-10 animate-slideUp delay-200">
+                  <div className="flex items-center glass-card px-4 py-3">
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center mr-3"
+                      style={{ backgroundColor: 'var(--color-blazing-amber)' }}
+                    >
+                      <Lightbulb className="h-4 w-4 text-black" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-white text-opacity-90 text-sm">Learn new topics</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center glass-card px-4 py-3">
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center mr-3"
+                      style={{ backgroundColor: 'var(--color-razor-crimson)' }}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="white">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                      </svg>
+                    </div>
+                    <div className="text-left">
+                      <p className="text-white text-opacity-90 text-sm">Test yourself with quizzes</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
             
-            <div className="mt-6">
+            {/* Knowledge Form */}
+            <div className="transform transition-all duration-500 hover:scale-[1.01] animate-slideUp delay-300">
               <KnowledgeForm 
                 onKnowledgeGenerated={handleKnowledgeGenerated}
                 onQuizRequested={handleDirectQuizRequested}
               />
             </div>
             
+            {/* Knowledge Result */}
             {knowledgeResult && (
-              <KnowledgeResult 
-                answer={knowledgeResult} 
-                onFlashcardsCreated={handleFlashcardsCreated} 
-              />
+              <div className="mt-10 animate-fadeIn">
+                <KnowledgeResult 
+                  answer={knowledgeResult} 
+                  onFlashcardsCreated={handleFlashcardsCreated} 
+                />
+              </div>
             )}
             
+            {/* Quiz Section */}
             {flashcards && flashcards.flashcards.length > 0 && (
-              <div id="flashcards-section" className="mt-8">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-medium text-gray-900">Flashcards</h2>
-                  <div className="flex gap-2">
-                    {!quizMode && (
+              <div id="quiz-section" className="mt-12 animate-slideUp">
+                <div className="text-center mb-6">
+                  <h2 className="text-2xl font-bold inline-block relative"
+                    style={{ color: 'var(--color-blazing-amber)' }}
+                  >
+                    {quizMode ? "Test Your Knowledge" : "Ready for a Quiz?"}
+                    <div className="absolute bottom-0 left-0 w-full h-1 rounded"
+                      style={{ backgroundColor: 'var(--color-razor-crimson)' }}
+                    ></div>
+                  </h2>
+                  
+                  {!quizMode && !directQuizGenerated && (
+                    <div className="mt-6">
+                      <p className="text-white text-opacity-80 mb-5 max-w-2xl mx-auto">
+                        Challenge yourself with a quiz based on the knowledge you just learned!
+                      </p>
                       <Button 
-                        className="bg-amber-500 hover:bg-amber-600 flex items-center"
+                        className="px-6 py-5 text-base rounded-xl shadow-lg transition-all duration-300 hover:scale-105"
+                        style={{ 
+                          backgroundColor: 'var(--color-razor-crimson)',
+                          color: 'white',
+                          boxShadow: '0 4px 14px rgba(216, 27, 96, 0.5)'
+                        }}
                         onClick={handleStartQuiz}
                       >
-                        <PenTool className="h-4 w-4 mr-1" />
-                        Start Quiz
+                        <Brain className="h-5 w-5 mr-2" />
+                        Start Quiz Challenge
                       </Button>
-                    )}
-                    <Button 
-                      className="bg-green-500 hover:bg-green-600"
-                      onClick={handleSaveFlashcards}
-                      disabled={saving}
-                    >
-                      {saving ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Saving...
-                        </>
-                      ) : (
-                        <>
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-                          </svg>
-                          Save Set
-                        </>
-                      )}
-                    </Button>
-                  </div>
+                    </div>
+                  )}
                 </div>
                 
-                {!quizMode ? (
-                  <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {flashcards.flashcards.map((card, index) => (
-                      <FlashCard
-                        key={index}
-                        question={card.question}
-                        answer={card.answer}
-                        index={index}
-                        total={flashcards.flashcards.length}
-                        backgroundColor={card.backgroundColor}
-                        textColor={card.textColor}
-                        font={card.font}
-                        difficulty={card.difficulty}
-                        tags={card.tags}
-                        imageUrl={card.imageUrl}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <div id="quiz-section" className="mt-4">
+                {quizMode && (
+                  <div className="mt-4 quiz-container p-6">
                     <FlashcardQuiz 
                       flashcards={flashcards}
                       onQuizComplete={handleQuizComplete}
@@ -272,21 +312,85 @@ export default function HomePage() {
                   </div>
                 )}
                 
+                {/* Quiz Results */}
                 {quizCompleted && (
-                  <Card className="mt-6">
-                    <CardContent className="pt-6">
+                  <Card className="mt-10 overflow-hidden border-0 shadow-2xl quiz-container" 
+                    style={{ 
+                      borderRadius: '1rem'
+                    }}
+                  >
+                    <div className="h-3" style={{ backgroundColor: 'var(--color-razor-crimson)' }}></div>
+                    <CardContent className="p-8">
                       <div className="text-center">
-                        <h3 className="text-xl font-medium">Quiz Results</h3>
-                        <p className="mt-2">
-                          You scored {quizScore.score} out of {quizScore.total} ({Math.round((quizScore.score / quizScore.total) * 100)}%)
+                        <div className="relative mb-10 inline-block">
+                          <div className="absolute -inset-3 rounded-full opacity-50"
+                            style={{ 
+                              background: `radial-gradient(circle, ${
+                                quizScore.score/quizScore.total >= 0.7 ? 'rgba(198, 255, 0, 0.5)' : 'rgba(255, 160, 0, 0.5)'
+                              } 0%, transparent 70%)`,
+                              animation: 'pulseSoft 2s infinite'
+                            }}
+                          ></div>
+                          <div className="relative inline-flex items-center justify-center w-28 h-28 rounded-full"
+                            style={{ 
+                              backgroundColor: quizScore.score/quizScore.total >= 0.7 ? 'var(--color-neon-lime)' : 'var(--color-blazing-amber)',
+                              boxShadow: `0 0 20px ${quizScore.score/quizScore.total >= 0.7 ? 'rgba(198, 255, 0, 0.5)' : 'rgba(255, 160, 0, 0.5)'}`
+                            }}
+                          >
+                            <span className="text-4xl font-bold text-black">
+                              {Math.round((quizScore.score / quizScore.total) * 100)}%
+                            </span>
+                          </div>
+                        </div>
+                        
+                        <h3 className="text-3xl font-bold mb-3" style={{ color: 'var(--color-blazing-amber)' }}>
+                          {quizScore.score/quizScore.total >= 0.8 ? "Outstanding!" : 
+                           quizScore.score/quizScore.total >= 0.6 ? "Well Done!" : "Keep Learning!"}
+                        </h3>
+                        <p className="text-xl text-white mb-6">
+                          You scored <span className="font-bold">{quizScore.score}</span> out of <span className="font-bold">{quizScore.total}</span> questions
                         </p>
-                        <div className="mt-4 flex justify-center space-x-4">
-                          <Button onClick={handleCancelQuiz} variant="outline">
+                        
+                        {quizScore.score/quizScore.total >= 0.8 && (
+                          <p className="text-lg mb-6" style={{ color: 'var(--color-neon-lime)' }}>
+                            Excellent work! You've mastered this topic!
+                          </p>
+                        )}
+                        
+                        {quizScore.score/quizScore.total >= 0.6 && quizScore.score/quizScore.total < 0.8 && (
+                          <p className="text-lg mb-6" style={{ color: 'var(--color-blazing-amber)' }}>
+                            Good job! You have a solid understanding of this topic.
+                          </p>
+                        )}
+                        
+                        {quizScore.score/quizScore.total < 0.6 && (
+                          <p className="text-lg mb-6" style={{ color: 'var(--color-razor-crimson)' }}>
+                            Keep practicing! You're on your way to understanding this topic.
+                          </p>
+                        )}
+                        
+                        <div className="mt-8 flex flex-wrap justify-center gap-4">
+                          <Button 
+                            onClick={handleCancelQuiz} 
+                            className="px-5 py-3 rounded-xl transition-all duration-200 hover:scale-105"
+                            style={{ 
+                              backgroundColor: 'rgba(255,255,255,0.15)',
+                              color: 'white'
+                            }}
+                          >
                             <BookOpen className="mr-2 h-4 w-4" />
-                            {directQuizGenerated ? "Return to Home" : "Return to Flashcards"}
+                            Return to Knowledge
                           </Button>
-                          <Button onClick={handleStartQuiz}>
-                            <PenTool className="mr-2 h-4 w-4" />
+                          <Button 
+                            onClick={handleStartQuiz}
+                            className="px-5 py-3 rounded-xl transition-all duration-200 hover:scale-105"
+                            style={{ 
+                              backgroundColor: 'var(--color-blazing-amber)',
+                              color: 'black',
+                              fontWeight: 'bold'
+                            }}
+                          >
+                            <Brain className="mr-2 h-4 w-4" />
                             Try Again
                           </Button>
                         </div>
@@ -299,6 +403,18 @@ export default function HomePage() {
           </div>
         </div>
       </main>
+      
+      {/* Animated Background Elements */}
+      <div className="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden" style={{ zIndex: -1 }}>
+        <div className="animate-float-slow absolute top-10 left-[10%] w-24 h-24 rounded-full opacity-10" 
+          style={{ backgroundColor: 'var(--color-razor-crimson)' }}></div>
+        <div className="animate-float absolute top-[20%] right-[5%] w-32 h-32 rounded-full opacity-10" 
+          style={{ backgroundColor: 'var(--color-blazing-amber)' }}></div>
+        <div className="animate-float-slow absolute bottom-[15%] left-[15%] w-40 h-40 rounded-full opacity-10" 
+          style={{ backgroundColor: 'var(--color-neon-lime)' }}></div>
+        <div className="animate-float absolute bottom-[25%] right-[20%] w-20 h-20 rounded-full opacity-10" 
+          style={{ backgroundColor: 'var(--color-razor-crimson)' }}></div>
+      </div>
     </div>
   );
 }
