@@ -4,6 +4,8 @@ import {
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider,
   signOut,
   onAuthStateChanged,
@@ -37,7 +39,22 @@ export const signUpWithEmail = async (email: string, password: string) => {
 
 // Sign in with Google
 export const signInWithGoogle = async () => {
-  return await signInWithPopup(auth, googleProvider);
+  // Add scopes for Google provider
+  googleProvider.addScope('profile');
+  googleProvider.addScope('email');
+  // Use redirect method which is more reliable than popup
+  return await signInWithRedirect(auth, googleProvider);
+};
+
+// Handle the redirect result
+export const handleRedirectResult = async () => {
+  try {
+    const result = await getRedirectResult(auth);
+    return result;
+  } catch (error) {
+    console.error("Error handling Google sign-in redirect:", error);
+    throw error;
+  }
 };
 
 // Sign out

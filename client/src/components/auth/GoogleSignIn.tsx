@@ -1,17 +1,50 @@
-import { useState } from "react";
-import { signInWithGoogle } from "@/lib/firebase";
+import { useState, useEffect } from "react";
+import { signInWithGoogle, handleRedirectResult } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 
 export default function GoogleSignIn() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  
+  // Check for redirect result when component mounts
+  useEffect(() => {
+    const checkRedirectResult = async () => {
+      try {
+        const result = await handleRedirectResult();
+        if (result) {
+          // The redirect was successful, but Firebase will handle the auth state change
+          // through the AuthContext, so we don't need to do anything here
+          console.log("Google signin redirect completed successfully");
+        }
+      } catch (error) {
+        let message = "Failed to complete Google sign-in";
+        if (error instanceof Error) {
+          message = error.message;
+        }
+        toast({
+          variant: "destructive",
+          title: "Authentication Error",
+          description: message,
+        });
+      }
+    };
+    
+    checkRedirectResult();
+  }, [toast]);
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
+      toast({
+        title: "Redirecting to Google",
+        description: "You'll be redirected to Google's authentication page.",
+      });
+      
       await signInWithGoogle();
-      // Firebase auth state will be handled by the AuthContext
+      // User will be redirected to Google's login page
+      // After successful login, they'll be redirected back to our app
+      // and the redirect result will be handled in the useEffect above
     } catch (error) {
       let message = "Failed to sign in with Google";
       if (error instanceof Error) {
@@ -22,7 +55,6 @@ export default function GoogleSignIn() {
         title: "Authentication Error",
         description: message,
       });
-    } finally {
       setIsLoading(false);
     }
   };
